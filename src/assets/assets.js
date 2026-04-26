@@ -37,9 +37,13 @@ import listIcon from "./listIcon.svg";
 import uploadArea from "./uploadArea.svg";
 import totalBookingIcon from "./totalBookingIcon.svg";
 import totalRevenueIcon from "./totalRevenueIcon.svg";
-
+import googleImg from './google.png'
 
 export const assets = {
+    roomImg1,
+    roomImg3,
+    regImage,
+    googleImg,
     logo,
     searchIcon,
     userIcon,
