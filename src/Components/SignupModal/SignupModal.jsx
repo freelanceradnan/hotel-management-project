@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { assets } from '../../assets/assets';
 import { X } from 'lucide-react';
 import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect } from 'firebase/auth';
-import { auth } from '../../Firebase/Firebase';
+import { auth, db } from '../../Firebase/Firebase';
 
 import { GoogleAuthProvider } from "firebase/auth";
 import { toast } from 'react-toastify';
+import { doc, setDoc } from 'firebase/firestore';
 const SignupModal = ({setIsModal}) => {
   const provider = new GoogleAuthProvider();
   //signup states
   const [currentPage,setCurrentPage]=useState("login")
-
+ const [checked,setChecked]=useState(false)
    const [signupLoading,setSignUpLoading]=useState(false)
   const [singupData,setSignupData]=useState({
     name:"",
@@ -26,8 +27,13 @@ const SignupModal = ({setIsModal}) => {
   e.preventDefault()
   setSignUpLoading(true)
   try {
-   const res=await createUserWithEmailAndPassword(auth,singupData.email,singupData.password)
-   if(res.user){
+   await createUserWithEmailAndPassword(auth,singupData.email,singupData.password)
+   
+   if(auth.currentUser){
+    await setDoc(doc(db,'users',auth.currentUser.uid),{
+      email:singupData.email,
+      role:"user"
+    })
     toast.success('Signup Success!', {
               style: { backgroundColor: '#ff8c00', color: '#ffffff' },
             });
@@ -259,14 +265,24 @@ return (
 
         {/* Options */}
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 cursor-pointer group">
-            <input className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" type="checkbox" id="checkbox" />
-            <span className="text-xs text-slate-600 group-hover:text-slate-800 transition-colors">Remember me</span>
-          </label>
+          {/* Terms & Conditions */}
+  <div className="flex items-start gap-2 text-sm text-gray-500">
+    <input 
+      type="checkbox" 
+      id="terms"
+      onClick={()=>setChecked(prev=>!prev)}
+      className="mt-1 accent-tomato cursor-pointer" 
+      required
+    />
+    <label htmlFor="terms" className="leading-tight cursor-pointer font-semibold">
+      By continuing, I agree to the <span className="text-blue-500 font-medium hover:underline">Terms of Service</span> and <span className="text-blue-500 font-medium hover:underline">Privacy Policy</span>.
+    </label>
+  </div>
          
         </div>
 
         {/* Submit */}
+       {checked && <>
        {signupLoading? <h2 className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center">
         Creating user...
        </h2>:
@@ -274,6 +290,7 @@ return (
           Register now
         </button>
        }
+       </>}
 
         <p className="text-center text-slate-500 text-sm mt-2">
           Don’t have an account? <button type="button" className="text-indigo-600 font-bold hover:underline" onClick={()=>setCurrentPage('login')}>
