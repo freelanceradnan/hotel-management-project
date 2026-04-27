@@ -21,7 +21,7 @@ const ExclusiveOffer = () => {
 {exclusiveOffers.map((item)=>(
     
     <div key={item._id} className='group relative flex flex-col items-start justify-between gap-1 pt-12 md:pt-18 px-4 rounded-xl text-white bg-no-repeat bg-cover bg-center' style={{backgroundImage:`url(${item.image})`}}>
-        {console.log(item)}
+     
    <p className='px-3 py-1 absolute top-4 left-4 text-xs bg-white text-gray-800 font-medium rounded-full'>{item.priceOff}%Off</p>
    <div>
     <p className='text-2xl font-medium font-playfair'>{item.title}</p>
