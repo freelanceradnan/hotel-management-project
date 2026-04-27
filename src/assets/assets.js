@@ -135,7 +135,7 @@ export const userDummyData = {
 export const hotelDummyData = {
     "_id": "67f76393197ac559e4089b72",
     "name": "Urbanza Suites",
-    "address": "Main Road  123 Street , 23 Colony",
+    "address": "Main 123 Street , 23 Colony",
     "contact": "+0123456789",
     "owner": userDummyData,
     "city": "New York",

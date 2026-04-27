@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
 import { assets } from "../../assets/assets";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { StoreContext } from "../../Contexts/StoreContext";
@@ -17,16 +17,24 @@ const Navbar = ({setIsModal,isModal}) => {
 
     const ref = React.useRef(null)
 
-    const [isScrolled, setIsScrolled] = React.useState(false);
-    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-
-    React.useEffect(() => {
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const location=useLocation()
+    useEffect(() => {
+      if(!location.pathname=='/'){
+       setIsScrolled(false)
+       return;
+      }
+      else{
+       setIsScrolled(true)
+      }
+      setIsScrolled(prev=>location.pathname!=='/'?true:false)
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 10);
         };
        window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+    }, [location.pathname]);
 if (loading) {
   //if loading state available in context for user login/singup
   return (
@@ -42,7 +50,7 @@ if (loading) {
 }
     return (
       
-            <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-25 transition-all duration-500 z-50 ${isScrolled ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4" : "py-4 md:py-6"}`}>
+            <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-25 transition-all duration-500 z-50 ${isScrolled ? "bg-white shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4" : "py-4 md:py-6"}`}>
         
                 {/* Logo */}
                 <Link to="/">
@@ -170,7 +178,7 @@ if (loading) {
             </Menu>
                     )}
             {/* //menu-mobileicon */}
-                   <img src={assets.menuIcon} alt="" onClick={()=>setIsMenuOpen(!isMenuOpen)} className={`${isMenuOpen?"invert":""} h-4`}/>
+                   <img src={assets.menuIcon} alt="" onClick={()=>setIsMenuOpen(!isMenuOpen)} className={`${isScrolled?"invert":""} h-4`}/>
                    
                 </div>
                

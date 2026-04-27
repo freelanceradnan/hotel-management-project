@@ -1,9 +1,12 @@
 import React from "react";
 import { assets, cities } from "../../assets/assets";
+import FeatureDestination from "../../Components/FeatureDestination/FeatureDestination";
+import ExclusiveOffer from "../../Components/ExclusiveOffer/ExclusiveOffer";
 
 const Home = () => {
   return (
     <>
+
       <div className='flex flex-col items-start justify-center px-6 md:px-16 lg:px-24 lx:px-32 text-white bg-[url("/src/assets/heroImage.png")] bg-no-repeat bg-cover bg-center h-screen'>
         <p className="bg-[#4989FF]/50 px-3.5 py-1 rounded-full mt-20">The Ultimate Hotel Experience</p>
         <h1 className="font-playfair text-3xl md:text-4xl md:text-[56px] md:leading-[56px] font-bold md:font-extrabold max-w-xl mt-4">Discover Your Perfect Getaway Destination</h1>
@@ -52,6 +55,11 @@ const Home = () => {
                 <span>Search</span>
             </button>
         </form>
+      </div>
+      
+      <div>
+        <FeatureDestination/>
+        <ExclusiveOffer/>
       </div>
     </>
   );

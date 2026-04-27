@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { assets } from '../../assets/assets';
 import { X } from 'lucide-react';
 import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect } from 'firebase/auth';
@@ -8,7 +8,13 @@ import { GoogleAuthProvider } from "firebase/auth";
 import { toast } from 'react-toastify';
 import { doc, setDoc } from 'firebase/firestore';
 const SignupModal = ({setIsModal}) => {
+  const [loginData,setLoginData]=useState({
+    email:"",
+    password:""
+  })
   const provider = new GoogleAuthProvider();
+  const [remembered,setRembered]=useState(false)
+  
   //signup states
   const [currentPage,setCurrentPage]=useState("login")
  const [checked,setChecked]=useState(false)
@@ -82,16 +88,24 @@ const SignupModal = ({setIsModal}) => {
   }
    
   }
-  
+  //remeberme
+  useEffect(()=>{
+  const savedRemember=localStorage.getItem('rememberedEmail')
+  if(savedRemember){
+  setLoginData({...loginData,email:savedRemember})
+  setChecked(true)
+  }
+  else{
+    setLoginData({...loginData,email:""})
+    setChecked(false)
+  }
+  },[])
   
   //login states
   const [loginLoading,setLoginLoading]=useState(false)
  
   const [loginError,setLoginError]=useState("")
-  const [loginData,setLoginData]=useState({
-    email:"",
-    password:""
-  })
+  
   const changeLoginHandler=(e)=>{
     setLoginData({...loginData,[e.target.name]:e.target.value})
   }
@@ -102,12 +116,17 @@ const SignupModal = ({setIsModal}) => {
   setLoginError("")
   try {
   await signInWithEmailAndPassword(auth,loginData.email,loginData.password)
+  if (remembered) {
+      localStorage.setItem("rememberedEmail", loginData.email);
+    } else {
+      localStorage.removeItem("rememberedEmail");
+    }
   setLoginLoading(false)
   setLoginError("")
   toast.success('Login Success!', {
               style: { backgroundColor: '#ff8c00', color: '#ffffff' },
             });
-
+  setIsModal(false)
    } catch (error) {
     setLoginData({
       email:"",
@@ -358,7 +377,7 @@ return (
         {/* Options */}
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 cursor-pointer group">
-            <input className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" type="checkbox" id="checkbox" />
+            <input className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" type="checkbox" id="checkbox" checked={remembered} onChange={(e)=>setRembered(e.target.checked)}/>
             <span className="text-xs text-slate-600 group-hover:text-slate-800 transition-colors">Remember me</span>
           </label>
           <button className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition-colors" onClick={()=>setCurrentPage('resetPassword')} type='button'>Forgot password?</button>
