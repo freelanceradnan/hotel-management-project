@@ -1,8 +1,13 @@
-import React from "react";
-import { Link } from "react-router";
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router";
 import { assets } from "../../assets/assets";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import { StoreContext } from "../../Contexts/StoreContext";
+import { signOut } from "firebase/auth";
+import { auth } from "../../Firebase/Firebase";
 const Navbar = ({setIsModal,isModal}) => {
+  const {currentUser,role,isLogin,loading}=useContext(StoreContext)
+  const navigate=useNavigate()
     const navLinks = [
         { name: 'Home', path: '/' },
         { name: 'Hotels', path: '/rooms' },
@@ -22,11 +27,23 @@ const Navbar = ({setIsModal,isModal}) => {
        window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
-
+if (loading) {
+  //if loading state available in context for user login/singup
+  return (
+    <nav className="h-16 w-full bg-white border-b flex items-center px-6 justify-between animate-pulse">
+      <div className="h-8 w-32 bg-gray-200 rounded"></div>
+      <div className="flex gap-4">
+        <div className="h-8 w-20 bg-gray-200 rounded"></div>
+        <div className="h-8 w-20 bg-gray-200 rounded"></div>
+        <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
+      </div>
+    </nav>
+  );
+}
     return (
       
             <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-25 transition-all duration-500 z-50 ${isScrolled ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4" : "py-4 md:py-6"}`}>
-
+        
                 {/* Logo */}
                 <Link to="/">
                     <img src={assets.logo} className={`h-9 ${isScrolled && "invert opacity-80"}`}/>
@@ -53,11 +70,9 @@ const Navbar = ({setIsModal,isModal}) => {
                         <circle cx="11" cy="11" r="8" />
                         <line x1="21" y1="21" x2="16.65" y2="16.65" />
                     </svg>
-                    <button className={`px-8 py-2.5 rounded-full ml-4 transition-all duration-500 ${isScrolled ? "text-white bg-black" : "bg-white text-black"}`} onClick={()=>setIsModal(!isModal)}>
-                        Login
-                    </button>
-                    {/* user-profile-menu */}
-                    {/* <Menu as="div" className="relative ml-3">
+                    
+                    {currentUser && isLogin ?
+                      <Menu as="div" className="relative ml-3">
               <MenuButton className="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                 <span className="absolute -inset-1.5" />
                 <span className="sr-only">Open user menu</span>
@@ -89,21 +104,29 @@ const Navbar = ({setIsModal,isModal}) => {
                   </a>
                 </MenuItem>
                 <MenuItem>
-                  <a
-                    href="#"
+                  <button
+                  type="button"
                     className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
+                    onClick={()=>signOut(auth)}
                   >
                     Sign out
-                  </a>
+                  </button>
                 </MenuItem>
               </MenuItems>
-            </Menu> */}
+            </Menu>:
+            <button className={`px-8 py-2.5 rounded-full ml-4 transition-all duration-500 ${isScrolled ? "text-white bg-black" : "bg-white text-black"}`} onClick={()=>setIsModal(!isModal)}>
+                        Login
+                    </button>
+                    }
+                    {/* user-profile-menu */}
+                  
                 </div>
 
                 {/* Mobile Menu Button */}
                 <div className="flex items-center gap-3 md:hidden">
                    {/* user-profile-menu */}
-                    <Menu as="div" className="relative ml-3">
+                    {currentUser && isLogin &&(
+                      <Menu as="div" className="relative ml-3">
               <MenuButton className="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                 <span className="absolute -inset-1.5" />
                 <span className="sr-only">Open user menu</span>
@@ -135,15 +158,17 @@ const Navbar = ({setIsModal,isModal}) => {
                   </a>
                 </MenuItem>
                 <MenuItem>
-                  <a
-                    href="#"
+                  <button
+                  onClick={()=>signOut(auth)}
+                    type="button"
                     className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
                   >
                     Sign out
-                  </a>
+                  </button>
                 </MenuItem>
               </MenuItems>
             </Menu>
+                    )}
             {/* //menu-mobileicon */}
                    <img src={assets.menuIcon} alt="" onClick={()=>setIsMenuOpen(!isMenuOpen)} className={`${isMenuOpen?"invert":""} h-4`}/>
                    
@@ -165,9 +190,15 @@ const Navbar = ({setIsModal,isModal}) => {
                         Dashboard
                     </button>
 
-                    <button className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500" onClick={()=>setIsModal(true)}>
+                    {!currentUser && !isLogin &&(
+                      <button className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500" onClick={()=>{
+                        setIsModal(true)
+                        setIsMenuOpen(false)
+                        navigate("/")
+                      }}>
                         Login
                     </button>
+                    )}
                 </div>
             </nav>
        

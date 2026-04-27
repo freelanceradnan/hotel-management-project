@@ -101,16 +101,13 @@ const SignupModal = ({setIsModal}) => {
   setLoginLoading(true)
   setLoginError("")
   try {
-   await signInWithEmailAndPassword(auth,loginData.email,loginData.password)
+  await signInWithEmailAndPassword(auth,loginData.email,loginData.password)
   setLoginLoading(false)
   setLoginError("")
   toast.success('Login Success!', {
               style: { backgroundColor: '#ff8c00', color: '#ffffff' },
             });
-  setLoginData({
-        email:"",
-    password:""
-  })
+
    } catch (error) {
     setLoginData({
       email:"",
@@ -131,7 +128,7 @@ const SignupModal = ({setIsModal}) => {
         message="Too many Attemp please try again later";
         break;
       default:
-        message="An error occured!Checkout your Internet!";
+        message="An error occured!";
         break;
     }
     setLoginLoading(false)
@@ -148,6 +145,10 @@ const SignupModal = ({setIsModal}) => {
   try {
     const result = await signInWithPopup(auth, provider);
     if (result.user) {
+    await setDoc(doc(db,'users',result.user.uid),{
+      email:result.user.email,
+      role:"user"
+    })
       toast.success('Google Login Success!', {
               style: { backgroundColor: '#ff8c00', color: '#ffffff' },
             });
