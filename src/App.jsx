@@ -3,6 +3,7 @@ import Navbar from './Components/Navbar/Navbar'
 import { Route, Routes, useLocation } from 'react-router'
 import Home from './Pages/Home/Home';
 import SignupModal from './Components/SignupModal/SignupModal';
+import Footer from './Components/Footer/Footer';
 
 
 
@@ -18,10 +19,18 @@ const [isModal,setIsModal]=useState(false)
    {!isAdminPath && <Navbar setIsModal={setIsModal} isModal={isModal}/>}
    {/* all-routes */}
    <div className="min-h-[70vh]">
+    {/* all-routes */}
     <Routes>
     <Route path="/" element={<Home/>}/>
    </Routes>
+   {/* universal-footer-section */}
+   <div>
+     <Footer/>
+   </div>
+   {/* singup modals */}
   {isModal &&  <SignupModal setIsModal={setIsModal}/>}
+  
+ 
    </div>
   </>
   )

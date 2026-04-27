@@ -4,6 +4,8 @@ import FeatureDestination from "../../Components/FeatureDestination/FeatureDesti
 import ExclusiveOffer from "../../Components/ExclusiveOffer/ExclusiveOffer";
 import Hero from "../../Components/HeroSection/Hero";
 import Testimonial from "../../Components/Testimonial/Testimonial";
+import Newsletter from "../../Components/Newsletter/Newsletter";
+import Footer from "../../Components/Footer/Footer";
 
 const Home = () => {
   return (
@@ -12,6 +14,8 @@ const Home = () => {
         <FeatureDestination/>
         <ExclusiveOffer/>
         <Testimonial/>
+        <Newsletter/>
+        
     </>
   );
 };
