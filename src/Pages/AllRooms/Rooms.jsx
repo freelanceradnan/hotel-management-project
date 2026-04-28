@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { assets, facilityIcons, roomsDummyData } from './../../assets/assets';
+import React, { useEffect, useState } from 'react';
+import { assets, facilityIcons, roomCommonData, roomsDummyData } from './../../assets/assets';
 import { useNavigate } from 'react-router';
 import StarRating from './../../Components/StarRatings/StarRating';
 const Checkbox=({label,selected=false,onChange=()=>{ }})=>{
@@ -19,6 +19,11 @@ const RadioButton=({label,selected=false,onChange=()=>{ }})=>{
    )
 }
 const Rooms = () => {
+    const [selectRoomType,setSelectRoomType]=useState([])
+    
+    const [selectPriceRange,setSelectPriceRange]=useState([])
+    const [selectShort,setSelectShort]=useState("")
+    const [searchFilterData,setSearchFilterData]=useState([])
     const navigate=useNavigate()
     const [openFilters,setOpenFilters]=useState(false)
     const roomTypes=[
@@ -38,6 +43,23 @@ const Rooms = () => {
         "Price Hight to Low",
         "Newest First"
     ]
+    useEffect(()=>{
+    let temp=[...roomsDummyData]
+    if(selectRoomType.length>0){
+       temp=temp.filter(room=>selectRoomType.includes(room.roomType))
+    }
+    if(selectPriceRange.length>0){
+        temp = temp.filter(room => {
+                return selectPriceRange.some(range => {
+                    const [min, max] = range.match(/\d+/g).map(Number);
+                    return room.pricePerNight >= min && room.pricePerNight <= max;
+                });
+            })
+    }
+    if(selectShort==='Price Low to High') temp.sort((a,b)=>a.pricePerNight-b.pricePerNight)
+    if(selectShort==='Price Hight to Lo') temp.sort((b,a)=>b.pricePerNight-a.pricePerNight)
+    setSearchFilterData(temp)
+    },[selectRoomType,selectPriceRange,selectShort])
     return (
         <div className='flex flex-col-reverse lg:flex-row items-start justify-between pt-28 md:pt-35 px-4 md:px-16 lg:px-24 xl:px-32'>
         <div>
@@ -47,7 +69,8 @@ const Rooms = () => {
         </div>
 
        {/* //display room */}
-       {roomsDummyData.map((room)=>(
+
+       {searchFilterData.map((room)=>(
         <div className='flex flex-col md:flex-row items-center py-10 gap-6 border-b border-gray-300 last:pb-30 last:border-0' key={room._id}>
         <img onClick={()=>{navigate(`/rooms/${room._id}`);scrollTo(0,0)}}
         src={room.images[0]} alt="hotel-img" title="View Room Details" className='max-h-65 md:w-1/2 rounded-xl shadow-lg object-cover cursor-pointer'/>
@@ -94,21 +117,45 @@ const Rooms = () => {
         <div className={`${openFilters ?'h-auto':'h-0 lg:h-auto'} overflow-hidden transition-all duration-700`}>
         <div className='px-5 pt-5'>
         <p className='font-medium text-gray-800 pb-8'>Popular Filters</p>
-        {roomTypes.map((room,index)=>(
-            <Checkbox key={index} label={room}/>
+        <div className='flex flex-col'>
+            {roomTypes.map((room,index)=>(
+           <Checkbox
+           key={index}
+           selected={selectRoomType.includes(room)}
+           label={room}
+           onChange={(checked,label)=>setSelectRoomType(prev=>checked?[...prev,label]:selectRoomType.filter(c=>c!==label))}
+           />
+            
         ))}
+        </div>
         </div>
         <div className='px-5 pt-5'>
         <p className='font-medium text-gray-800 pb-8'>Price Range</p>
-        {priceRanges.map((range,index)=>(
-            <Checkbox key={index} label={`$ ${range}`}/>
+        <div className='flex flex-col'>
+            {priceRanges.map((range,index)=>(
+            <Checkbox
+            key={index}
+            label={range}
+            selected={selectPriceRange.includes(range)}
+            onChange={(checked,label)=>setSelectPriceRange(prev=>checked?[...prev,range]:
+                selectPriceRange.filter(c=>c!==range)
+            )}
+            />
         ))}
+        </div>
         </div>
         <div className='px-5 pt-5 pb-5'>
         <p className='font-medium text-gray-800 pb-8'>Sort By</p>
-        {sortOptions.map((option,index)=>(
-        <RadioButton key={index} label={option}/>
+        <div className='flex flex-col'>
+            {sortOptions.map((option,index)=>(
+        <RadioButton
+        key={index}
+        label={option}
+        selected={selectShort===option}
+        onChange={(val)=>setSelectShort(val)}
+        />
         ))}
+        </div>
         </div>
         </div>
 
