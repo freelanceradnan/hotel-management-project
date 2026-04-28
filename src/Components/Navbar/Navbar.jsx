@@ -18,8 +18,12 @@ const Navbar = ({setIsModal,isModal}) => {
     const ref = React.useRef(null)
 
     const [isScrolled, setIsScrolled] = useState(false);
+    
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const location=useLocation()
+    const isHome=location.pathname==='/'
+    const notHome=(!isHome)
+    
     useEffect(() => {
       if(!location.pathname=='/'){
        setIsScrolled(false)
@@ -27,10 +31,12 @@ const Navbar = ({setIsModal,isModal}) => {
       }
       else{
        setIsScrolled(true)
+       
       }
       setIsScrolled(prev=>location.pathname!=='/'?true:false)
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 10);
+            
         };
        window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
@@ -48,9 +54,11 @@ if (loading) {
     </nav>
   );
 }
+
     return (
       
-            <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-25 transition-all duration-500 z-50 ${isScrolled ? "bg-white shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4" : "py-4 md:py-6"}`}>
+            <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-25 transition-all duration-500 z-50 ${isScrolled ? "bg-white shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4 " : "py-3 md:py-4 "} ${notHome && "bg-[#4ec2e6]"}`}>
+             
         
                 {/* Logo */}
                 <Link to="/">
@@ -61,7 +69,7 @@ if (loading) {
                 {/* Desktop Nav */}
                 <div className="hidden md:flex items-center gap-4 lg:gap-8">
                     {navLinks.map((link, i) => (
-                        <Link key={i} to={link.path} className={`group flex flex-col gap-0.5 ${isScrolled ? "text-gray-700" : "text-white"}`}>
+                        <Link key={i} to={link.path} className={`group flex flex-col gap-0.5 ${isScrolled ? "text-gray-700" : "text-white"} `}>
                             {link.name}
                             <div className={`${isScrolled ? "bg-gray-700" : "bg-white"} h-0.5 w-0 group-hover:w-full transition-all duration-300`} />
                         </Link>

@@ -4,6 +4,7 @@ import { Route, Routes, useLocation } from 'react-router'
 import Home from './Pages/Home/Home';
 import SignupModal from './Components/SignupModal/SignupModal';
 import Footer from './Components/Footer/Footer';
+import Rooms from './Pages/AllRooms/Rooms';
 
 
 
@@ -22,6 +23,7 @@ const [isModal,setIsModal]=useState(false)
     {/* all-routes */}
     <Routes>
     <Route path="/" element={<Home/>}/>
+    <Route path="/rooms" element={<Rooms/>}/>
    </Routes>
    {/* universal-footer-section */}
    <div>
