@@ -41,6 +41,7 @@ const Rooms = () => {
     const sortOptions=[
         "Price Low to High",
         "Price Hight to Low",
+        //do work next
         "Newest First"
     ]
     useEffect(()=>{
@@ -50,6 +51,7 @@ const Rooms = () => {
     }
     if(selectPriceRange.length>0){
         temp = temp.filter(room => {
+            //price min-max
                 return selectPriceRange.some(range => {
                     const [min, max] = range.match(/\d+/g).map(Number);
                     return room.pricePerNight >= min && room.pricePerNight <= max;
@@ -109,7 +111,11 @@ const Rooms = () => {
             <span className='lg:hidden' onClick={()=>setOpenFilters(!openFilters)}>
                 {openFilters? 'HIDE':'SHOW'}
             </span>
-            <span className='hidden lg:block'>CLEAR</span>
+            <span className='hidden lg:block' onClick={()=>{
+                setSelectShort("")
+                setSelectPriceRange([])
+                setSelectRoomType([])
+            }}>CLEAR</span>
         </div>
        </div>
        <div>

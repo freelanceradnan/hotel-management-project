@@ -5,11 +5,14 @@ import App from './App.jsx'
 import { BrowserRouter } from 'react-router'
 import { ToastContainer } from 'react-toastify'
 import { StoreContextProvider } from './Contexts/StoreContext.jsx'
+import { Provider } from 'react-redux'
+import  {store}  from './Store/Store.js'
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <StoreContextProvider>
+    <Provider store={store}>
+<StoreContextProvider>
       <BrowserRouter>
     <ToastContainer 
       position="top-center"
@@ -19,5 +22,6 @@ createRoot(document.getElementById('root')).render(
     <App />
     </BrowserRouter>
     </StoreContextProvider>
+    </Provider>
   </StrictMode>,
 )

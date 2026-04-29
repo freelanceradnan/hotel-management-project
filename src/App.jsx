@@ -5,6 +5,7 @@ import Home from './Pages/Home/Home';
 import SignupModal from './Components/SignupModal/SignupModal';
 import Footer from './Components/Footer/Footer';
 import Rooms from './Pages/AllRooms/Rooms';
+import RoomDetails from './Pages/RoomDeatils/RoomDetails';
 
 
 
@@ -24,6 +25,7 @@ const [isModal,setIsModal]=useState(false)
     <Routes>
     <Route path="/" element={<Home/>}/>
     <Route path="/rooms" element={<Rooms/>}/>
+    <Route path="/rooms/:id" element={<RoomDetails/>}/>
    </Routes>
    {/* universal-footer-section */}
    <div>
