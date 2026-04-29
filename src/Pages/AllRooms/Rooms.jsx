@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { assets, facilityIcons, roomCommonData, roomsDummyData } from './../../assets/assets';
 import { useNavigate } from 'react-router';
 import StarRating from './../../Components/StarRatings/StarRating';
+import { useGetAllRoomsQuery } from '../../Feature/ApiSlice';
+//dynamic filter components
 const Checkbox=({label,selected=false,onChange=()=>{ }})=>{
    return (
     <label className='flex gap-3 items-center cursor-pointer mt-2 text-sm'>
@@ -19,13 +21,15 @@ const RadioButton=({label,selected=false,onChange=()=>{ }})=>{
    )
 }
 const Rooms = () => {
+    const {data:allRooms,isLoading}=useGetAllRoomsQuery()
     const [selectRoomType,setSelectRoomType]=useState([])
-    
+    const [storeRoom,setStoreRoom]=useState([])
     const [selectPriceRange,setSelectPriceRange]=useState([])
     const [selectShort,setSelectShort]=useState("")
     const [searchFilterData,setSearchFilterData]=useState([])
     const navigate=useNavigate()
     const [openFilters,setOpenFilters]=useState(false)
+    //dummy duata for filter options
     const roomTypes=[
         "Single Bed",
         "Double Bed",
@@ -44,9 +48,16 @@ const Rooms = () => {
         //do work next
         "Newest First"
     ]
+    useEffect(() => {
+    if (allRooms?.length > 0) { 
+        setStoreRoom(allRooms);
+    }
+}, [allRooms]);
+//filter data
     useEffect(()=>{
-    let temp=[...roomsDummyData]
-    if(selectRoomType.length>0){
+    if(storeRoom){
+    let temp=[...storeRoom]
+if(selectRoomType.length>0){
        temp=temp.filter(room=>selectRoomType.includes(room.roomType))
     }
     if(selectPriceRange.length>0){
@@ -54,14 +65,30 @@ const Rooms = () => {
             //price min-max
                 return selectPriceRange.some(range => {
                     const [min, max] = range.match(/\d+/g).map(Number);
-                    return room.pricePerNight >= min && room.pricePerNight <= max;
+                    return room.price >= min && room.price <= max;
                 });
             })
     }
-    if(selectShort==='Price Low to High') temp.sort((a,b)=>a.pricePerNight-b.pricePerNight)
-    if(selectShort==='Price Hight to Lo') temp.sort((b,a)=>b.pricePerNight-a.pricePerNight)
+    if(selectShort==='Price Low to High') temp.sort((a,b)=>a.price-b.price)
+    if(selectShort==='Price Hight to Lo') temp.sort((b,a)=>b.price-a.price)
     setSearchFilterData(temp)
-    },[selectRoomType,selectPriceRange,selectShort])
+    }
+    
+    },[selectRoomType,selectPriceRange,selectShort,storeRoom])
+//laoding states
+     if (isLoading) {
+        return (
+            <div className='flex flex-wrap justify-center gap-10 py-20 bg-slate-50'>
+                {[1, 2, 3, 4].map((n) => (
+                    <div key={n} className="flex w-70 flex-col gap-4">
+                        <div className="skeleton h-48 w-full bg-gray-200 animate-pulse rounded-xl"></div>
+                        <div className="skeleton h-4 w-28 bg-gray-200 animate-pulse"></div>
+                        <div className="skeleton h-4 w-full bg-gray-200 animate-pulse"></div>
+                    </div>
+                ))}
+            </div>
+        );
+    }
     return (
         <div className='flex flex-col-reverse lg:flex-row items-start justify-between pt-28 md:pt-35 px-4 md:px-16 lg:px-24 xl:px-32'>
         <div>
@@ -73,24 +100,24 @@ const Rooms = () => {
        {/* //display room */}
 
        {searchFilterData.map((room)=>(
-        <div className='flex flex-col md:flex-row items-center py-10 gap-6 border-b border-gray-300 last:pb-30 last:border-0' key={room._id}>
-        <img onClick={()=>{navigate(`/rooms/${room._id}`);scrollTo(0,0)}}
-        src={room.images[0]} alt="hotel-img" title="View Room Details" className='max-h-65 md:w-1/2 rounded-xl shadow-lg object-cover cursor-pointer'/>
+        <div className='flex flex-col md:flex-row items-center py-10 gap-6 border-b border-gray-300 last:pb-30 last:border-0' key={room?.id}>
+        <img onClick={()=>{navigate(`/rooms/${room?.id}`);scrollTo(0,0)}}
+        src={room?.image[0]} alt="hotel-img" title="View Room Details" className='max-h-65 md:w-1/2 rounded-xl shadow-lg object-cover cursor-pointer'/>
         <div className='md:w-1/2 flex flex-col gap-1'>
-        <p className='text-gray-500'>{room.hotel.city}</p>
-        <p onClick={()=>{navigate(`/rooms/${room._id}`);scrollTo(0,0)}}
-        className='text-gray-800 text-3xl font-playfair cursor-pointer'>{room.hotel.name}</p>
+        {/* <p className='text-gray-500'>{room.hotel.city}</p> */}
+        <p onClick={()=>{navigate(`/rooms/${room?.id}`);scrollTo(0,0)}}
+        className='text-gray-800 text-3xl font-playfair cursor-pointer'>{room?.name}</p>
         <div className='flex items-center'>
          <StarRating/>
          <p className='ml-2'>200+ reviews</p>
         </div>
         <div className='flex items-center gap-1 text-gray-500 mt-2 text-sm'>
             <img src={assets.locationIcon} alt="location" />
-            <span>{room.hotel.address}</span>
+            <span>{room?.location}</span>
         </div>
         {/* room-amenties */}
         <div className='flex flex-wrap items-center mt-3 mb-3 gap-1'>
-        {room.amenities.map((item,index)=>(
+        {room?.services.map((item,index)=>(
         <div key={index} className='flex items-center gap-2 px-3 py-1 rounded-lg bg-[#F5F5FF]'>
             <img src={facilityIcons[item]} alt="items" className=' w-3 h-3'/>
             <p className='font-[400] text-[12px]'>{item}</p>
@@ -98,7 +125,7 @@ const Rooms = () => {
         ))}
         </div>
         {/* room price per night */}
-        <p className='text-xl font-semibold text-gray-700'>${room.pricePerNight} /night</p>
+        <p className='text-xl font-semibold text-gray-700'>${room?.price} /night</p>
         </div>
         </div>
        ))}
