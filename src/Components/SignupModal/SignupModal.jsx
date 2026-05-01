@@ -164,15 +164,23 @@ const SignupModal = ({setIsModal}) => {
   try {
     const result = await signInWithPopup(auth, provider);
     if (result.user) {
-    await setDoc(doc(db,'users',result.user.uid),{
-      email:result.user.email,
-      role:"user"
-    })
-      toast.success('Google Login Success!', {
-              style: { backgroundColor: '#ff8c00', color: '#ffffff' },
-            });
-      setIsModal(false);
-    }
+  const userRef = doc(db, 'users', result.user.uid);
+  const userSnap = await getDoc(userRef);
+  if (!userSnap.exists()) {
+    await setDoc(userRef, {
+      email: result.user.email,
+      role: "user",
+      createdAt: new Date()
+    });
+  } else {
+    console.log("Existing user logged in. Data preserved.");
+  }
+
+  toast.success('Google Login Success!', {
+    style: { backgroundColor: '#ff8c00', color: '#ffffff' },
+  });
+  setIsModal(false);
+}
   } catch (error) {
      toast.error(error.code, {
               style: { backgroundColor: '#ff8c00', color: '#ffffff' },
