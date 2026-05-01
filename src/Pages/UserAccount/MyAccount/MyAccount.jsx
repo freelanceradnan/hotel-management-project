@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 const MyAccount = () => {
     const navigate = useNavigate();
     const [userData, setUserData] = useState(null);
-
+//navaitems
     const navItems = [
         { title: "Profile", desc: "Provide your personal details and travel documents", to: "", icon: <User size={20} /> },
         { title: "Communications", desc: "Control which notifications you get", to: "communications", icon: <Bell size={20} /> },
@@ -58,7 +58,7 @@ const MyAccount = () => {
                                 <NavLink
                                     key={index}
                                     to={item.to === "" ? "/myAccount" : `/myAccount/${item.to}`}
-                                   
+                                    // 'end' property ensures "Profile" is only active at /myAccount
                                     end={item.to === ""}
                                     className={({ isActive }) => 
                                         `flex items-center justify-between p-5 border-b border-gray-50 transition-all duration-200 group ${
@@ -106,7 +106,7 @@ const MyAccount = () => {
                     </nav>
                 </div>
 
-                {/* Content Area (Outlet): Full width on all screens */}
+                
                 <div className='w-full bg-white min-h-[500px] md:min-h-[700px] rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10'>
                     <Outlet context={[userData, setUserData]} />
                 </div>
