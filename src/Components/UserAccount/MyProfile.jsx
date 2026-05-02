@@ -74,9 +74,9 @@ const MyProfile = () => {
             await updateDoc(docRef, { ...editProfileData });
             setEditProfile(false);
             setOriginalData(editProfileData);
-            toast.success('Profile updated successfully!', { id: loading });
+            toast.success('Profile updated successfully!');
         } catch (error) {
-            toast.error('Update failed!', { id: loading });
+            toast.error('Update failed!');
         }
     };
 
@@ -101,9 +101,9 @@ const MyProfile = () => {
             const docRef = doc(db, 'users', auth.currentUser.uid);
             await updateDoc(docRef, { ...addressData });
             setEditAddress(false);
-            toast.success('Address saved successfully!', { id: loading });
+            toast.success('Address saved successfully!');
         } catch (error) {
-            toast.error('Failed to save address!', { id: loading });
+            toast.error('Failed to save address!');
         }
     };
 

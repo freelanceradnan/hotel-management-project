@@ -11,6 +11,10 @@ import MyProfile from './Components/UserAccount/MyProfile';
 import Communications from './Pages/UserAccount/Communications/Communications';
 import Payments from './Pages/UserAccount/myPayment/MyPayment';
 import MyPayment from './Pages/UserAccount/myPayment/MyPayment';
+import MyCoupon from './Pages/UserAccount/myCoupon/MyCoupon';
+import Security from './Pages/UserAccount/MySecurity/Security';
+import ChangeEmailBasic from './Pages/UserAccount/MySecurity/Security';
+import Feedback from './Pages/UserAccount/MyFeedback/Feedback';
 
 
 
@@ -38,9 +42,9 @@ const [isModal,setIsModal]=useState(false)
     <Route path="" element={<MyProfile />} />
     <Route path="communications" element={<Communications/>}/>
     <Route path="payments" element={<MyPayment/>}/>
-    <Route path="coupons" element={<h3 className=''>this is the next!</h3>}/>
-    <Route path="security" element={<h3 className=''>this is the next!</h3>}/>
-    <Route path="help" element={<h3 className=''>this is the next!</h3>}/>
+    <Route path="coupons" element={<MyCoupon/>}/>
+    <Route path="security" element={<Security/>}/>
+    <Route path="help" element={<Feedback/>}/>
     </Route>
    </Routes>
    {/* universal-footer-section */}
