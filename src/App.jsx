@@ -8,6 +8,9 @@ import Rooms from './Pages/AllRooms/Rooms';
 import RoomDetails from './Pages/RoomDeatils/RoomDetails';
 import MyAccount from './Pages/UserAccount/MyAccount/MyAccount';
 import MyProfile from './Components/UserAccount/MyProfile';
+import Communications from './Pages/UserAccount/Communications/Communications';
+import Payments from './Pages/UserAccount/myPayment/MyPayment';
+import MyPayment from './Pages/UserAccount/myPayment/MyPayment';
 
 
 
@@ -33,8 +36,8 @@ const [isModal,setIsModal]=useState(false)
     <Route path="/myAccount" element={<MyAccount/>} >
     
     <Route path="" element={<MyProfile />} />
-    <Route path="communications" element={<h3 className=''>this is the heavy!</h3>}/>
-    <Route path="payments" element={<h3 className=''>this is the marhum!</h3>}/>
+    <Route path="communications" element={<Communications/>}/>
+    <Route path="payments" element={<MyPayment/>}/>
     <Route path="coupons" element={<h3 className=''>this is the next!</h3>}/>
     <Route path="security" element={<h3 className=''>this is the next!</h3>}/>
     <Route path="help" element={<h3 className=''>this is the next!</h3>}/>

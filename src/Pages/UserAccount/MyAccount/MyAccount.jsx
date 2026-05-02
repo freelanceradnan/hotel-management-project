@@ -34,9 +34,10 @@ const MyAccount = () => {
 
     const handleSignOut = () => {
         signOut(auth).then(() => {
-            toast.success("Signed out successfully");
             navigate("/");
             window.scrollTo(0, 0);
+            toast.success("Signed out successfully");
+            
         });
     };
 
@@ -48,7 +49,7 @@ const MyAccount = () => {
                 {/* Sidebar Section */}
                 <div className='w-full lg:w-[380px] shrink-0'>
                     <div className='mb-8 px-2'>
-                        <h2 className='text-3xl font-bold text-gray-900'>Hi, {userData?.name || "User"}</h2>
+                        <h2 className='text-2xl font-bold text-gray-900'>Hi, {userData?.name || "User"}</h2>
                         <p className='text-gray-500 font-medium'>{auth?.currentUser?.email}</p>
                     </div>
 

@@ -110,7 +110,7 @@ const MyProfile = () => {
     const district = Object.keys(allArea);
 
     return (
-        <div className='max-w-4xl mx-auto p-6 md:p-10 flex flex-col gap-10 bg-white'>
+        <div className='max-w-4xl mx-auto p-2 md:p-10 flex flex-col gap-1 bg-white'>
            
            
             <section className='border-b pb-8'>
@@ -127,7 +127,7 @@ const MyProfile = () => {
                     </button>
                 </div>
 
-                <form onSubmit={submitProfileHandler} className='grid grid-cols-1 md:grid-cols-2 gap-6 mt-6'>
+                <form onSubmit={submitProfileHandler} className='grid grid-cols-1 md:grid-cols-2 gap-1 mt-6'>
                     <div className='flex flex-col gap-2'>
                         <label className='text-sm font-medium text-gray-700'>Full Name</label>
                         {editProfile ? (

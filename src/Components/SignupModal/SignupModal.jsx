@@ -7,7 +7,9 @@ import { auth, db } from '../../Firebase/Firebase';
 import { GoogleAuthProvider } from "firebase/auth";
 import { toast } from 'react-toastify';
 import { doc, setDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router';
 const SignupModal = ({setIsModal}) => {
+  const navigate=useNavigate()
   const [loginData,setLoginData]=useState({
     email:"",
     password:""
@@ -40,6 +42,7 @@ const SignupModal = ({setIsModal}) => {
       email:singupData.email,
       role:"user"
     })
+    setIsModal(false)
     toast.success('Signup Success!', {
               style: { backgroundColor: '#ff8c00', color: '#ffffff' },
             });
@@ -121,6 +124,8 @@ const SignupModal = ({setIsModal}) => {
     } else {
       localStorage.removeItem("rememberedEmail");
     }
+   setIsModal(false);
+  navigate("/")
   setLoginLoading(false)
   setLoginError("")
   toast.success('Login Success!', {
@@ -310,7 +315,7 @@ return (
         </div>
 
         {/* Submit */}
-       {checked && <>
+       {!checked && <>
        {signupLoading? <h2 className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center">
         Creating user...
        </h2>:
