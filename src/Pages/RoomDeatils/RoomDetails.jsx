@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { assets, facilityIcons, roomCommonData, roomsDummyData } from '../../assets/assets';
 import StarRating from '../../Components/StarRatings/StarRating';
 import { useGetAllRoomsQuery } from '../../Feature/ApiSlice';
+import { toast } from 'react-toastify';
 
 const RoomDetails = () => {
+    const [guestNumber,setGuestNumber]=useState(1)
+    const [checkin,setCheckIn]=useState("")
+    const [checkout,setCheckOut]=useState("")
+    const [step,setStep]=useState(1)
+    
     const {id}=useParams()
     const [room,setRoom]=useState(null)
+    console.log(room)
     const [mainImage,setMainImage]=useState(null)
     const {data:roomdata,isLoading}=useGetAllRoomsQuery()
     //fetch room data
@@ -19,7 +26,22 @@ const RoomDetails = () => {
     }
     }
     },[id,roomdata])
-
+    //check avilablelity first user
+    const handleCheckAvailability=(e)=>{
+        e.preventDefault()
+        if(checkin>=checkout){
+             toast.error('checkin must be less then checkout!')
+            
+        }
+        if(room.capacity<guestNumber){
+        toast.error('guest member big then room capacity!')
+       
+        }
+        else{
+             toast.success('room available for you! Reserve Now')
+            setStep(2)
+        }
+    }
     //loading room data...
     if (isLoading) {
         return (
@@ -84,26 +106,34 @@ const RoomDetails = () => {
 <p className='text-2xl font-medium'>${room.price}/night</p>
 </div>
 {/* {checkin cheout form} */}
-<form className='flex flex-col md:flex-row items-start md:items-center justify-between bg-[#ffffff] shadow-[0px_0px_20px_rgba(0,0,0,0.2)] p-6 rounded-xl mx-auto mt-16 max-w-6xl'>
-<div className='flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500'>
+
+<form className='flex flex-col md:flex-row items-start md:items-center justify-between bg-[#ffffff] shadow-[0px_0px_20px_rgba(0,0,0,0.2)] p-6 rounded-xl mx-auto mt-16 max-w-6xl ' onSubmit={handleCheckAvailability}>
+<div className='flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500' >
 
 <div className='flex flex-col'>
     <label htmlFor="checkDate" className='font-medium'>Check In</label>
-<input type="date" name="" id="checkDate" placeholder='Check-In' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required/>
+<input type="date" name="" id="checkDate" placeholder='Check-In' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' value={checkin} onChange={(e)=>setCheckIn(e.target.value)}required/>
 </div>
 <div className='flex flex-col'>
     <label htmlFor="CheckoutDate" className='font-medium'>Check-Out</label>
-<input type="date" name="" id="CheckoutDate" placeholder='Check-In' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required/>
+<input type="date" name="" id="CheckoutDate" placeholder='Check-In' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' value={checkout} onChange={(e)=>setCheckOut(e.target.value)} required/>
 </div>
 
 <div className='flex flex-col'>
     <label htmlFor="guests" className='font-medium'>Guests</label>
-<input type="number" name="" id="guests" placeholder='0' className='max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' required/>
+<input type="number" name="" id="guests" min="1" placeholder='0' className='max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' value={guestNumber} onChange={(e)=>setGuestNumber(Number((e.target.value)))} required/>
 </div>
 </div>
+{step===1?
 <button type='submit' className='bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-fulll max-md:mt-16 md:px-3 md:py-4 text-base cursor-pointer'>
 Check Availability 
+</button>:
+<Link to={`/rooms/checkout/`+room.id}>
+<button type='button' className='bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-fulll max-md:mt-16 md:px-3 md:py-4 text-base cursor-pointer'>
+Reserve Now 
 </button>
+</Link>
+}
 </form>
 {/* common-specifications */}
 <div className='mt-25 space-y-4'>

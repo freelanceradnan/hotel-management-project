@@ -17,6 +17,7 @@ import ChangeEmailBasic from './Pages/UserAccount/MySecurity/Security';
 import Feedback from './Pages/UserAccount/MyFeedback/Feedback';
 import Favorites from './Pages/Favourties/Favorites';
 import UserPrivate from './Components/UserPrivateRoute/UserPrivate';
+import Checkout from './Pages/RoomCheckout/Checkout';
 
 
 
@@ -36,6 +37,8 @@ const [isModal,setIsModal]=useState(false)
     <Routes>
     <Route path="/" element={<Home/>}/>
     <Route path="/rooms" element={<Rooms/>}/>
+    <Route path="/rooms" element={<Rooms/>}/>
+    <Route path="/rooms/checkout/:id" element={<Checkout/>}/>
     <Route path="/rooms/:id" element={<RoomDetails/>}/>
     <Route path="favourites" element={
       <UserPrivate>
