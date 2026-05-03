@@ -150,7 +150,7 @@ if (loading) {
       </MenuItem>
        <MenuItem>
         <Link
-          to="#"
+          to="myAccount/help"
           className="group flex items-center px-1 py-2 text-sm text-gray-700 rounded-lg data-focus:bg-blue-600 data-focus:text-white transition-colors font-semibold"
         >
           Feedback
