@@ -315,7 +315,7 @@ return (
         </div>
 
         {/* Submit */}
-       {!checked && <>
+       {checked && <>
        {signupLoading? <h2 className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center">
         Creating user...
        </h2>:

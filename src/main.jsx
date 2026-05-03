@@ -10,7 +10,7 @@ import  {store}  from './Store/Store.js'
 
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  
     <Provider store={store}>
 <StoreContextProvider>
       <BrowserRouter>
@@ -23,5 +23,5 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
     </StoreContextProvider>
     </Provider>
-  </StrictMode>,
+  
 )

@@ -15,6 +15,8 @@ import MyCoupon from './Pages/UserAccount/myCoupon/MyCoupon';
 import Security from './Pages/UserAccount/MySecurity/Security';
 import ChangeEmailBasic from './Pages/UserAccount/MySecurity/Security';
 import Feedback from './Pages/UserAccount/MyFeedback/Feedback';
+import Favorites from './Pages/Favourties/Favorites';
+import UserPrivate from './Components/UserPrivateRoute/UserPrivate';
 
 
 
@@ -35,9 +37,18 @@ const [isModal,setIsModal]=useState(false)
     <Route path="/" element={<Home/>}/>
     <Route path="/rooms" element={<Rooms/>}/>
     <Route path="/rooms/:id" element={<RoomDetails/>}/>
-
+    <Route path="favourites" element={
+      <UserPrivate>
+        <Favorites/>
+      </UserPrivate>
+    }/>
+     
     
-    <Route path="/myAccount" element={<MyAccount/>} >
+    <Route path="/myAccount" element={
+      <UserPrivate>
+        <MyAccount/>
+      </UserPrivate>
+    } >
     
     <Route path="" element={<MyProfile />} />
     <Route path="communications" element={<Communications/>}/>

@@ -1,12 +1,18 @@
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { assets } from '../../assets/assets';
 import { Link } from 'react-router';
 import { Heart, LucideMove } from 'lucide-react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavourite } from '../../Feature/Whishlist';
+import { StoreContext } from '../../Contexts/StoreContext';
 
 const HotelCard = ({room,index}) => {
+ const {isLogin,role}=useContext(StoreContext)
+
+ const { favorites } = useSelector(state => state.wish);
+ const isFavorite = favorites.some(fav => fav.id === room.id); //favorite logic returns true if product added
+
   const dispatch=useDispatch()
     return (
        <div
@@ -23,7 +29,11 @@ const HotelCard = ({room,index}) => {
     {index % 2 === 0 && (
         <p className='px-3 py-1 absolute top-3 left-3 text-xs bg-white text-gray-800 font-medium rounded-full'>Best Seller</p>
     )}
-   <button className='h-6 w-6 py-1 absolute top-3 right-3 text-xs bg-white text-gray-800 font-medium rounded-full flex items-center justify-center' onClick={()=>dispatch(toggleFavourite(room))}><Heart size={15}/> </button>
+   {isLogin && role==='user' &&(
+    <button className='h-6 w-6 py-1 absolute top-3 right-3 text-xs bg-white text-gray-800 font-medium rounded-full flex items-center justify-center' onClick={()=>dispatch(toggleFavourite(room))}><Heart size={15} className='' color="#ff3838" 
+   fill={isFavorite ? "#ff3838" : "none"} 
+    color={isFavorite ? "#ff3838" : "#888"}/> </button>
+   )}
     <div className='p-4 pt-5 flex flex-col flex-1 justify-between'>
         <div>
             
