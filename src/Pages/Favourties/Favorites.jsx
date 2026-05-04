@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { assets } from '../../assets/assets';
 import { StoreContext } from '../../Contexts/StoreContext';
 import { toggleFavourite } from '../../Feature/Whishlist';
+import { toast } from 'react-toastify';
 
 const Favorites = ({isFavorite}) => {
     const { favorites } = useSelector(state => state.wish);
@@ -23,14 +24,17 @@ const Favorites = ({isFavorite}) => {
   className='relative flex flex-col w-full rounded-xl overflow-hidden bg-white text-gray-500/90 shadow-[0px_4px_4px_rgba(0,0,0,0.5)] h-full'
 >
     <div className='w-full h-48 overflow-hidden shrink-0'>
-       <Link > <img src={room.image[0]} alt="room-image" className='w-full h-full object-cover' 
+       <Link to={`/rooms/`+room.id}> <img src={room.image[0]} alt="room-image" className='w-full h-full object-cover' 
         
         /></Link>
         
     </div>
 
  
-       <button className='h-6 w-6 py-1 absolute top-3 right-3 text-xs bg-white text-gray-800 font-medium rounded-full flex items-center justify-center' onClick={()=>dispatch(toggleFavourite(room))}><Heart size={15} className='' color="#ff3838" 
+       <button className='h-6 w-6 py-1 absolute top-3 right-3 text-xs bg-white text-gray-800 font-medium rounded-full flex items-center justify-center' onClick={()=>{
+        dispatch(toggleFavourite(room))
+        toast.success('Favourite List Updated!')
+       }}><Heart size={15} className='' color="#ff3838" 
       fill={`favorites?.some(fav=>fav.id===some.id) `? "#ff3838" : "none"} 
        color={`favorites?.some(fav=>fav.id===some.id) ` ? "#ff3838" : "#888"}/> </button>
      

@@ -6,6 +6,7 @@ import { Heart, LucideMove } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavourite } from '../../Feature/Whishlist';
 import { StoreContext } from '../../Contexts/StoreContext';
+import { toast } from 'react-toastify';
 
 const HotelCard = ({room,index}) => {
  const {isLogin,role}=useContext(StoreContext)
@@ -30,7 +31,10 @@ const HotelCard = ({room,index}) => {
         <p className='px-3 py-1 absolute top-3 left-3 text-xs bg-white text-gray-800 font-medium rounded-full'>Best Seller</p>
     )}
    {isLogin && role==='user' &&(
-    <button className='h-6 w-6 py-1 absolute top-3 right-3 text-xs bg-white text-gray-800 font-medium rounded-full flex items-center justify-center' onClick={()=>dispatch(toggleFavourite(room))}><Heart size={15} className='' color="#ff3838" 
+    <button className='h-6 w-6 py-1 absolute top-3 right-3 text-xs bg-white text-gray-800 font-medium rounded-full flex items-center justify-center' onClick={()=>{
+        dispatch(toggleFavourite(room))
+        toast.success('Favourite Updates!')
+    }}><Heart size={15} className='' color="#ff3838" 
    fill={isFavorite ? "#ff3838" : "none"} 
     color={isFavorite ? "#ff3838" : "#888"}/> </button>
    )}

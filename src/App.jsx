@@ -18,6 +18,9 @@ import Feedback from './Pages/UserAccount/MyFeedback/Feedback';
 import Favorites from './Pages/Favourties/Favorites';
 import UserPrivate from './Components/UserPrivateRoute/UserPrivate';
 import Checkout from './Pages/RoomCheckout/Checkout';
+import Payment from './Pages/Payment/Payment';
+import OrderSuccess from './Pages/OrderSuccess/OrderSuccess';
+import PreOrdered from './Pages/PreOrdered/PreOrdered';
 
 
 
@@ -39,6 +42,9 @@ const [isModal,setIsModal]=useState(false)
     <Route path="/rooms" element={<Rooms/>}/>
     <Route path="/rooms" element={<Rooms/>}/>
     <Route path="/rooms/checkout/:id" element={<Checkout/>}/>
+    <Route path="/payment" element={<Payment/>}/>
+    <Route path="/preorder" element={<PreOrdered/>}/>
+    <Route path="/order-success" element={<OrderSuccess/>}/>
     <Route path="/rooms/:id" element={<RoomDetails/>}/>
     <Route path="favourites" element={
       <UserPrivate>
