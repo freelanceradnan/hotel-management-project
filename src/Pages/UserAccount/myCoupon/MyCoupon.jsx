@@ -6,7 +6,7 @@ const MyCoupon = () => {
     <div className="max-w-4xl mx-auto p-4 md:p-6">
       {/* Header Section */}
       <div className="border-b border-gray-100 pb-6 mb-8">
-        <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Coupons</h2>
+        <h2 className="border-b border-gray-100 pb-6 mb-8">Coupons</h2>
         <p className="text-gray-500 mt-2 flex items-center gap-2">
           <Info size={16} className="text-blue-500" />
           Collect and manage your discount vouchers for your next stay.

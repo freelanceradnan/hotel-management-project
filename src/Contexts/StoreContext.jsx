@@ -8,6 +8,8 @@ export const StoreContextProvider = ({children}) => {
     const [loading,setLoading]=useState(true)
     const [isLogin,setIsLogin]=useState(false)
     const [role,setRole]=useState(null)
+    const [orderDetails,setOrderDetails]=useState({})
+    const [roomBookingDate,setRoomBookingDate]=useState({})
     
     const resetAuth = () => {
     setCurrentUser(null);
@@ -56,7 +58,7 @@ export const StoreContextProvider = ({children}) => {
   },[])
 
     const value={
-        currentUser,role,isLogin,loading
+        currentUser,role,isLogin,loading,orderDetails,setOrderDetails,roomBookingDate,setRoomBookingDate
     }
     return (
         <StoreContext.Provider value={value}>

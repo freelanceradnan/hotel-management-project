@@ -47,7 +47,7 @@ const PreOrdered = () => {
                     </Link>
                 </div>
 
-                <p className="mt-12 text-gray-400 text-xs uppercase font-bold tracking-[0.2em]">SoleStyle Premium Footwear</p>
+               
             </div>
         </div>
         </div>

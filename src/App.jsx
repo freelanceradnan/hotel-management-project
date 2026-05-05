@@ -21,31 +21,60 @@ import Checkout from './Pages/RoomCheckout/Checkout';
 import Payment from './Pages/Payment/Payment';
 import OrderSuccess from './Pages/OrderSuccess/OrderSuccess';
 import PreOrdered from './Pages/PreOrdered/PreOrdered';
+import NotFound from './Pages/NotFound/NotFound';
 
 
 
 
 function App() {
+  const location=useLocation()
+  
   //hide admin dashboard
 const isAdminPath=useLocation().pathname.includes("admin-dashboard")
 const [isModal,setIsModal]=useState(false)
 
+//footer hide and navbar hide logic
+const allRoutes = [
+    "/", "/rooms", "/payment", "/preorder", "/order-success", "/favourites", "/myAccount"
+  ];
+const isKnownRoute = allRoutes.some(path => location.pathname === path) || 
+                       location.pathname.startsWith("/rooms/") || 
+                       location.pathname.startsWith("/myAccount/");
+const showFooter = !isAdminPath && isKnownRoute;
   return (
   <>
   {/* navbar */}
-   {!isAdminPath && <Navbar setIsModal={setIsModal} isModal={isModal}/>}
+   {!isAdminPath && showFooter &&<Navbar setIsModal={setIsModal} isModal={isModal}/>}
    {/* all-routes */}
    <div className="min-h-[70vh]">
     {/* all-routes */}
     <Routes>
-    <Route path="/" element={<Home/>}/>
+    <Route path="/" element={<Home/>} />
     <Route path="/rooms" element={<Rooms/>}/>
     <Route path="/rooms" element={<Rooms/>}/>
-    <Route path="/rooms/checkout/:id" element={<Checkout/>}/>
-    <Route path="/payment" element={<Payment/>}/>
-    <Route path="/preorder" element={<PreOrdered/>}/>
-    <Route path="/order-success" element={<OrderSuccess/>}/>
-    <Route path="/rooms/:id" element={<RoomDetails/>}/>
+    <Route path="/rooms/checkout/:id" element={
+      <UserPrivate>
+        <Checkout/>
+      </UserPrivate>
+    }/>
+    <Route path="/payment" element={
+      <UserPrivate>
+        <Payment/>
+      </UserPrivate>
+    }/>
+    <Route path="/preorder" element={
+      <UserPrivate>
+        <PreOrdered/>
+      </UserPrivate>
+    }/>
+    <Route path="/order-success" element={
+      <UserPrivate>
+      <OrderSuccess/>
+    </UserPrivate>}/>
+    <Route path="/rooms/:id" element={
+      
+      <RoomDetails/>
+   }/>
     <Route path="favourites" element={
       <UserPrivate>
         <Favorites/>
@@ -66,11 +95,16 @@ const [isModal,setIsModal]=useState(false)
     <Route path="security" element={<Security/>}/>
     <Route path="help" element={<Feedback/>}/>
     </Route>
+    <Route path="*" element={<NotFound />} />
    </Routes>
    {/* universal-footer-section */}
-   <div>
+   
+    {showFooter &&
+    <div>
      <Footer/>
    </div>
+    }
+   
    {/* singup modals */}
   {isModal &&  <SignupModal setIsModal={setIsModal}/>}
   

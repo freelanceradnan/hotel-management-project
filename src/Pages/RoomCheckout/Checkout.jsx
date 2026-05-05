@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { assets } from '../../assets/assets';
 import { useGetAllRoomsQuery } from '../../Feature/ApiSlice';
+import { StoreContext } from '../../Contexts/StoreContext';
+import { toast } from 'react-toastify';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../../Firebase/Firebase';
 
 const Checkout = () => {
     const { id } = useParams();
@@ -9,7 +13,29 @@ const Checkout = () => {
     const [radioValue, setRadioValue] = useState("masterCard");
     const { data: allrooms, isLoading } = useGetAllRoomsQuery();
     const [room, setRoom] = useState(null);
-
+    
+    const genarateOrderId = "SS-" + Math.floor(Math.random() * 900000 + 100000);
+   const { orderDetails, setOrderDetails,roomBookingDate } = useContext(StoreContext);
+   const {currentUser}=useContext(StoreContext)
+   const isPayment=radioValue==='masterCard'?true:false;
+   
+   const [formData, setFormData] = useState({
+        OrderId:genarateOrderId,
+        email:currentUser.email,
+        name: "",
+        address: "",
+        city: "",
+        post: ""
+    });
+    //changing radio current value
+    useEffect(() => {
+    setFormData(prev => ({
+        ...prev,
+        payMethod: radioValue,
+        isPayment: radioValue === 'masterCard'
+    }));
+}, [radioValue]);
+    
     useEffect(() => {
         if (allrooms) {
             const foundRoom = allrooms.find(c => c.id === id);
@@ -26,14 +52,54 @@ const Checkout = () => {
 
     if (!room) return <div className="text-center py-20 text-red-500 font-bold text-2xl">Room not found!</div>;
 
-    const paymentSubmit = (e) => {
-        e.preventDefault();
-        if (radioValue === 'masterCard') {
-            navigate('/payment');
-        } else {
-            navigate('/preorder');
+  
+const changeHandler=(e)=>{
+     const {name,value}=e.target
+     setFormData((prev)=>({
+        ...prev,
+       [name]:name=='post'?Number(value):value
+     }))
+}
+//submit preorder
+const paymentSubmit = async(e) => {
+    e.preventDefault();
+
+   try {
+     if (room) {
+        const finalBookingData = {
+            ...formData,
+            RoomId: room.id
+            
+        };
+        setOrderDetails(finalBookingData);
+        if(radioValue==='masterCard'){
+            navigate('/payment')
+            window.scrollTo(0, 0);
         }
+        else{
+            navigate('/preorder')
+             const finalBookingData = {
+            ...formData,
+            RoomId: room.id
+            
+        };
+             const docRef=collection(db,'orders')
+            await addDoc(docRef,{
+                    ...finalBookingData,
+                    roomBookingDate
+                  })
+             toast.success('Preorder success')
+             window.scrollTo(0, 0);
+            
+        }
+        // const targetPath = radioValue === 'masterCard' ? '/payment' : '/preorder';
+        // navigate(targetPath);
+       
     }
+   } catch (error) {
+    console.log(error.message)
+   }
+};
 
     return (
         <div className='py-20 md:py-26 px-4 md:px-16 lg:px-24 bg-[#FAFBFF] min-h-screen font-sans'>
@@ -57,7 +123,7 @@ const Checkout = () => {
                                 <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                                     <div className='flex flex-col gap-2'>
                                         <label className='text-sm font-semibold text-gray-600 ml-1'>First Name</label>
-                                        <input type="text" placeholder="John" className='p-4 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all' required />
+                                        <input type="text" name="name" value={formData.name} onChange={changeHandler} placeholder="John" className='p-4 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all' required />
                                     </div>
                                     <div className='flex flex-col gap-2'>
                                         <label className='text-sm font-semibold text-gray-600 ml-1'>Last Name</label>
@@ -65,15 +131,15 @@ const Checkout = () => {
                                     </div>
                                     <div className='flex flex-col gap-2 md:col-span-2'>
                                         <label className='text-sm font-semibold text-gray-600 ml-1'>Street Address</label>
-                                        <input type="text" placeholder="Apartment, suite, or street name" className='p-4 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all' required />
+                                        <input type="text" name="address" value={formData.address} onChange={changeHandler} placeholder="Apartment, suite, or street name" className='p-4 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all' required />
                                     </div>
                                     <div className='flex flex-col gap-2'>
                                         <label className='text-sm font-semibold text-gray-600 ml-1'>Town / City</label>
-                                        <input type="text" placeholder="New York" className='p-4 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all' required />
+                                        <input type="text" name="city" value={formData.city} onChange={changeHandler} placeholder="New York" className='p-4 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all' required />
                                     </div>
                                     <div className='flex flex-col gap-2'>
                                         <label className='text-sm font-semibold text-gray-600 ml-1'>Postal Code</label>
-                                        <input type="text" placeholder="10001" className='p-4 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all' required />
+                                        <input type="number" name="post" min={1} value={formData.post} onChange={changeHandler} placeholder="10001" className='p-4 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all' required />
                                     </div>
                                 </div>
                             </div>
@@ -177,5 +243,4 @@ const Checkout = () => {
         </div>
     );
 };
-
 export default Checkout;

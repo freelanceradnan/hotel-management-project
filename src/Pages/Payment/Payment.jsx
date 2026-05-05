@@ -1,28 +1,45 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { ArrowLeft, CreditCard, Lock } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../../Firebase/Firebase';
+import { StoreContext } from '../../Contexts/StoreContext';
 
 const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate=useNavigate()
+  const {orderDetails,setOrderDetails}=useContext(StoreContext)
   const [formData, setFormData] = useState({
     name: '',
     cardNumber: '',
     expiry: '',
     cvv: ''
   });
+ const {roomBookingDate,setRoomBookingDate}=useContext(StoreContext)
 
-  const handlePayment = (e) => {
+  const handlePayment = async(e) => {
     e.preventDefault();
     setLoading(true);
     
     // Simulating an API call
-    setTimeout(() => {
+   
+    try {
+      setTimeout(() => {
       setLoading(false);
       toast.success("Payment Successful! Your sneakers are on the way.");
       navigate('/order-success')
+      scrollTo(0,0)
     }, 2500);
+      const docRef=collection(db,'orders')
+      await addDoc(docRef,{
+        ...orderDetails,
+        roomBookingDate
+      })
+      toast.success('order success done!')
+    } catch (error) {
+      console.log(error.message)
+    }
   };
 
   const handleChange = (e) => {
@@ -31,9 +48,9 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className='py-12 md:py-24 px-4 md:px-16 lg:px-24 bg-[#fdfdfd] min-h-screen'>
+    <div className='py-20 md:py-24 px-4 md:px-16 lg:px-24 bg-[#fdfdfd] min-h-screen'>
       <div className="flex items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
+        <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 ">
           
           {/* Back Button */}
           <button className="flex items-center text-gray-400 hover:text-black mb-6 transition group">
@@ -52,7 +69,7 @@ const CheckoutPage = () => {
             </div>
           </div>
 
-          <form onSubmit={handlePayment} className="space-y-4">
+          <form onSubmit={handlePayment} className="space-y-2">
             {/* Cardholder Name */}
             <div>
               <label className="text-xs font-bold uppercase text-gray-400 mb-2 block tracking-wider">Cardholder Name</label>
