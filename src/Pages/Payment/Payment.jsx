@@ -2,9 +2,10 @@ import React, { useContext, useState } from 'react';
 import { ArrowLeft, CreditCard, Lock } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db } from '../../Firebase/Firebase';
 import { StoreContext } from '../../Contexts/StoreContext';
+import { useAddOrderMutation } from '../../Feature/ApiSlice';
 
 const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
@@ -17,7 +18,21 @@ const CheckoutPage = () => {
     cvv: ''
   });
  const {roomBookingDate,setRoomBookingDate}=useContext(StoreContext)
+ const [addOrder]=useAddOrderMutation()
+ //convert date and time to format
+const now = new Date();
+const normalDate = now.toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric'
+}); 
 
+const normalTime = now.toLocaleTimeString('en-US', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+});
+const fullDateTime = `${normalDate}, ${normalTime}`;
   const handlePayment = async(e) => {
     e.preventDefault();
     setLoading(true);
@@ -31,11 +46,13 @@ const CheckoutPage = () => {
       navigate('/order-success')
       scrollTo(0,0)
     }, 2500);
-      const docRef=collection(db,'orders')
-      await addDoc(docRef,{
-        ...orderDetails,
-        roomBookingDate
-      })
+    const OrderPayload={
+       ...orderDetails,
+        roomBookingDate,
+        createAt:fullDateTime,
+        status:"Processing",
+    }
+      await addOrder(OrderPayload).unwrap
       toast.success('order success done!')
     } catch (error) {
       console.log(error.message)

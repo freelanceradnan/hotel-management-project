@@ -10,7 +10,7 @@ export const StoreContextProvider = ({children}) => {
     const [role,setRole]=useState(null)
     const [orderDetails,setOrderDetails]=useState({})
     const [roomBookingDate,setRoomBookingDate]=useState({})
-    
+  
     const resetAuth = () => {
     setCurrentUser(null);
     setIsLogin(false);

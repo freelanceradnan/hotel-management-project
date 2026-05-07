@@ -38,7 +38,8 @@ const OrderSuccess = () => {
 
                     
                     <Link 
-                        to="/invoice" 
+                        to="/invoice"
+                        state={{orders:orderDetails}}
                         className="flex items-center justify-center gap-1 bg-gray-100 text-black py-4 rounded-2xl font-bold hover:bg-gray-200 transition"
                     >
                         <Download size={20} /> Invoice

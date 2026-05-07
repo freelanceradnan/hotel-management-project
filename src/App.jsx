@@ -14,7 +14,6 @@ import MyPayment from './Pages/UserAccount/myPayment/MyPayment';
 import MyCoupon from './Pages/UserAccount/myCoupon/MyCoupon';
 import Security from './Pages/UserAccount/MySecurity/Security';
 import ChangeEmailBasic from './Pages/UserAccount/MySecurity/Security';
-import Feedback from './Pages/UserAccount/MyFeedback/Feedback';
 import Favorites from './Pages/Favourties/Favorites';
 import UserPrivate from './Components/UserPrivateRoute/UserPrivate';
 import Checkout from './Pages/RoomCheckout/Checkout';
@@ -22,6 +21,9 @@ import Payment from './Pages/Payment/Payment';
 import OrderSuccess from './Pages/OrderSuccess/OrderSuccess';
 import PreOrdered from './Pages/PreOrdered/PreOrdered';
 import NotFound from './Pages/NotFound/NotFound';
+import InvoicePage from './Pages/InvoicePage/InvoicePage';
+import Feedback from './Pages/UserAccount/MyFeedback/Feedback';
+import Orders from './Pages/UserAccount/Orders/Orders';
 
 
 
@@ -51,6 +53,7 @@ const showFooter = !isAdminPath && isKnownRoute;
     <Routes>
     <Route path="/" element={<Home/>} />
     <Route path="/rooms" element={<Rooms/>}/>
+    <Route path="/invoice" element={<InvoicePage/>}/>
     <Route path="/rooms" element={<Rooms/>}/>
     <Route path="/rooms/checkout/:id" element={
       <UserPrivate>
@@ -90,6 +93,7 @@ const showFooter = !isAdminPath && isKnownRoute;
     
     <Route path="" element={<MyProfile />} />
     <Route path="communications" element={<Communications/>}/>
+    <Route path="orders" element={<Orders/>}/>
     <Route path="payments" element={<MyPayment/>}/>
     <Route path="coupons" element={<MyCoupon/>}/>
     <Route path="security" element={<Security/>}/>

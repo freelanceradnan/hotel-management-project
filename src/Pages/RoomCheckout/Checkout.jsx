@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { assets } from '../../assets/assets';
-import { useGetAllRoomsQuery } from '../../Feature/ApiSlice';
+import { useAddOrderMutation, useGetAllRoomsQuery } from '../../Feature/ApiSlice';
 import { StoreContext } from '../../Contexts/StoreContext';
 import { toast } from 'react-toastify';
 import { addDoc, collection } from 'firebase/firestore';
@@ -18,7 +18,7 @@ const Checkout = () => {
    const { orderDetails, setOrderDetails,roomBookingDate } = useContext(StoreContext);
    const {currentUser}=useContext(StoreContext)
    const isPayment=radioValue==='masterCard'?true:false;
-   
+   const [addOrder]=useAddOrderMutation()
    const [formData, setFormData] = useState({
         OrderId:genarateOrderId,
         email:currentUser.email,
@@ -60,6 +60,20 @@ const changeHandler=(e)=>{
        [name]:name=='post'?Number(value):value
      }))
 }
+//captured current time
+const now = new Date();
+const normalDate = now.toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric'
+}); 
+
+const normalTime = now.toLocaleTimeString('en-US', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+});
+const fullDateTime = `${normalDate}, ${normalTime}`;
 //submit preorder
 const paymentSubmit = async(e) => {
     e.preventDefault();
@@ -68,8 +82,8 @@ const paymentSubmit = async(e) => {
      if (room) {
         const finalBookingData = {
             ...formData,
-            RoomId: room.id
-            
+            RoomId: room.id,
+            Price:room.price
         };
         setOrderDetails(finalBookingData);
         if(radioValue==='masterCard'){
@@ -80,14 +94,16 @@ const paymentSubmit = async(e) => {
             navigate('/preorder')
              const finalBookingData = {
             ...formData,
-            RoomId: room.id
-            
+            RoomId: room.id,
+             Price:"PreBooking"
         };
-             const docRef=collection(db,'orders')
-            await addDoc(docRef,{
-                    ...finalBookingData,
-                    roomBookingDate
-                  })
+             const bookingDetails={
+                ...finalBookingData,
+                    roomBookingDate,
+                    status:"No Status",
+                    createAt:fullDateTime,
+             }
+             addOrder(bookingDetails).unwrap
              toast.success('Preorder success')
              window.scrollTo(0, 0);
             

@@ -1,11 +1,11 @@
 import { deleteUser, EmailAuthProvider, getAuth, reauthenticateWithCredential, sendPasswordResetEmail, updateEmail } from "firebase/auth";
 import { ChevronDown, ChevronRight, Mail, Lock, ShieldCheck } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { useGetUserDataQuery } from "../../../Feature/ApiSlice";
 import { auth, db } from "../../../Firebase/Firebase";
 import { toast } from "react-toastify";
 import { deleteDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router";
+import { useGetUserDataQuery } from "../../../Feature/ApiSlice";
 
 const Security = () => {
   const auth = getAuth();
@@ -20,7 +20,7 @@ const Security = () => {
   const navigate=useNavigate()
   useEffect(()=>{
   if(userData && user){
-    console.log(user.email)
+  
     const findUser=userData.find(c=>c.email==user.email)
     
   }
@@ -31,7 +31,7 @@ const Security = () => {
   const [newEmail, setNewEmail] = useState('');
   const [loading, setLoading] = useState(false);
   
- console.log(recoveryEmail)
+ 
   
   // Step 1: Verify Password
   const handlerPassword = async (e) => {

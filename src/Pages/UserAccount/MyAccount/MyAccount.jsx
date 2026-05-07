@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { ChevronRight, User, Bell, CreditCard, Ticket, ShieldCheck, HelpCircle } from 'lucide-react';
+import { ChevronRight, User, Bell, CreditCard, Ticket, ShieldCheck, HelpCircle, Truck } from 'lucide-react';
 import { auth, db } from '../../../Firebase/Firebase';
 import { toast } from 'react-toastify';
 
@@ -13,6 +13,7 @@ const MyAccount = () => {
     const navItems = [
         { title: "Profile", desc: "Provide your personal details and travel documents", to: "", icon: <User size={20} /> },
         { title: "Communications", desc: "Control which notifications you get", to: "communications", icon: <Bell size={20} /> },
+        { title: "Orders", desc: "Controls your current order", to: "orders", icon:  <Truck size={20}/>},
         { title: "Payment methods", desc: "View saved payment methods", to: "payments", icon: <CreditCard size={20} /> },
         { title: "Coupons", desc: "View your available coupons", to: "coupons", icon: <Ticket size={20} /> },
         { title: "Security and settings", desc: "Update your email or password", to: "security", icon: <ShieldCheck size={20} /> },
@@ -108,7 +109,7 @@ const MyAccount = () => {
                 </div>
 
                 
-                <div className='w-full bg-white min-h-[500px] md:min-h-[700px] rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10'>
+                <div className='w-full bg-white min-h-[500px] md:min-h-[700px] rounded-2xl shadow-sm border border-gray-100 p-6 md:p-6 min-w-0'>
                     <Outlet context={[userData, setUserData]} />
                 </div>
 
