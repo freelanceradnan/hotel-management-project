@@ -37,7 +37,7 @@ const [isModal,setIsModal]=useState(false)
 
 //footer hide and navbar hide logic
 const allRoutes = [
-    "/", "/rooms", "/payment", "/preorder", "/order-success", "/favourites", "/myAccount"
+    "/", "/rooms", "/payment", "/preorder", "/order-success", "/favourites", "/myAccount","/invoice",
   ];
 const isKnownRoute = allRoutes.some(path => location.pathname === path) || 
                        location.pathname.startsWith("/rooms/") || 

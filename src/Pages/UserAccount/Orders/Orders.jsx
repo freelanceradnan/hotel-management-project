@@ -2,6 +2,8 @@ import React, { useContext } from 'react';
 import { useGetSeperateOrderQuery } from '../../../Feature/ApiSlice';
 import { StoreContext } from '../../../Contexts/StoreContext';
 import { Download } from 'lucide-react';
+import { Link } from 'react-router';
+
 
 const Orders = () => {
     const { currentUser } = useContext(StoreContext);
@@ -71,8 +73,11 @@ const Orders = () => {
                                 <p className="text-lg font-black text-gray-900">${d.Price}</p>
                             </div>
                             <button className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-gray-800 transition">
+                                <Link to="/invoice" state={{orders:d}}>
                                 <Download size={14} />
                                 Invoice
+                                </Link>
+                                
                             </button>
                         </div>
                     </div>
@@ -106,7 +111,7 @@ const Orders = () => {
                                 </td>
                                 <td className="px-6 py-5 text-center">
                                     <button className="p-2 rounded-lg hover:bg-black hover:text-white text-gray-400 transition">
-                                        <Download size={18} />
+                                        <Link to="/invoice" state={{orders:d}}><Download size={18}/></Link>
                                     </button>
                                 </td>
                             </tr>

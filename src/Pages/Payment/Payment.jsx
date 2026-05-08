@@ -17,7 +17,7 @@ const CheckoutPage = () => {
     expiry: '',
     cvv: ''
   });
- const {roomBookingDate,setRoomBookingDate}=useContext(StoreContext)
+ const {roomBookingDate,setRoomBookingDate,OrderTime,setOrderTime}=useContext(StoreContext)
  const [addOrder]=useAddOrderMutation()
  //convert date and time to format
 const now = new Date();
@@ -53,6 +53,7 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
         status:"Processing",
     }
       await addOrder(OrderPayload).unwrap
+      setOrderTime(fullDateTime)
       toast.success('order success done!')
     } catch (error) {
       console.log(error.message)
