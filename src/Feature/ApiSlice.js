@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
-import { collection, addDoc, getDocs, query, where } from "firebase/firestore"; // Added addDoc
+import { collection, addDoc, getDocs, query, where, updateDoc, doc } from "firebase/firestore"; // Added addDoc
 import { db } from "../Firebase/Firebase";
 
 export const ApiSlice = createApi({
@@ -57,6 +57,38 @@ export const ApiSlice = createApi({
       
       invalidatesTags: ['orders'] 
     }),
+       updateOrder: builder.mutation({
+  async queryFn({ orderData }) {
+
+    try {
+
+      const docRef = doc(
+        db,
+        "orders",
+        orderData.id
+      );
+
+      await updateDoc(docRef, orderData.OrderPayload);
+
+       return {
+        data: {
+          success: true
+        }
+      };
+
+
+    } catch (error) {
+
+      return {
+        error: {
+          message: error.message
+        }
+      };
+
+    }
+  },
+  invalidatesTags: ['orders'] 
+}),
     getUserData:builder.query({
     async queryFn(){
     try {
@@ -82,5 +114,6 @@ export const {
   useGetAllRoomsQuery, 
   useGetUserDataQuery,
   useGetSeperateOrderQuery, 
-  useAddOrderMutation 
+  useAddOrderMutation,
+  useUpdateOrderMutation
 } = ApiSlice;

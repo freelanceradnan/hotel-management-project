@@ -5,20 +5,22 @@ import { useNavigate } from 'react-router';
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db } from '../../Firebase/Firebase';
 import { StoreContext } from '../../Contexts/StoreContext';
-import { useAddOrderMutation } from '../../Feature/ApiSlice';
+import { useAddOrderMutation, useUpdateOrderMutation } from '../../Feature/ApiSlice';
 
-const CheckoutPage = () => {
-  const [loading, setLoading] = useState(false);
+const Prepayment = () => {
+const [loading, setLoading] = useState(false);
   const navigate=useNavigate()
   const {orderDetails,setOrderDetails}=useContext(StoreContext)
+  
+  
   const [formData, setFormData] = useState({
     name: '',
     cardNumber: '',
     expiry: '',
     cvv: ''
   });
- const {roomBookingDate,setRoomBookingDate,OrderTime,setOrderTime}=useContext(StoreContext)
- const [addOrder]=useAddOrderMutation()
+ const {roomBookingDate,setRoomBookingDate,OrderTime,setOrderTime,updateOrderId}=useContext(StoreContext)
+ const [updateOrder]=useUpdateOrderMutation()
  //convert date and time to format
 const now = new Date();
 const normalDate = now.toLocaleDateString('en-GB', {
@@ -43,18 +45,26 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
       setTimeout(() => {
       setLoading(false);
       toast.success("Payment Successful! Your sneakers are on the way.");
-      navigate('/order-success')
+      navigate('/prepaymentsuccess')
       scrollTo(0,0)
     }, 2500);
-    const OrderPayload={
-       ...orderDetails,
-        roomBookingDate,
-        createAt:fullDateTime,
-        status:"Paid",
-    }
-      await addOrder(OrderPayload).unwrap
+    const OrderPayload = {
+   ...orderDetails,
+   isPayment: true,
+   payMethod: "MasterCard",
+   roomBookingDate,
+   createAt: fullDateTime,
+   status: "paid",
+};
+
+      await updateOrder({
+   orderData: {
+      id: updateOrderId,
+      OrderPayload
+   }
+}).unwrap();
       setOrderTime(fullDateTime)
-      toast.success('order success done!')
+      toast.success('Payement update Success!')
     } catch (error) {
       console.log(error.message)
     }
@@ -65,8 +75,8 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  return (
-    <div className='py-20 md:py-24 px-4 md:px-16 lg:px-24 bg-[#fdfdfd] min-h-screen'>
+    return (
+       <div className='py-20 md:py-24 px-4 md:px-16 lg:px-24 bg-[#fdfdfd] min-h-screen'>
       <div className="flex items-center justify-center">
         <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 ">
           
@@ -172,7 +182,7 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
         </div>
       </div>
     </div>
-  );
+    );
 };
 
-export default CheckoutPage;
+export default Prepayment;

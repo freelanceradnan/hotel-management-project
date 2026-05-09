@@ -36,7 +36,7 @@ const PreOrdered = () => {
 
                     
                     <Link 
-                        to="/" 
+                        to="/prepayment" 
                         className="flex items-center justify-center gap-1 bg-gray-100 text-black py-4 rounded-2xl font-bold hover:bg-gray-200 transition"
                     >
                        <BanknoteArrowDown color="#15f4bc" />Make Payment

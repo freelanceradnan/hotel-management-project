@@ -15,7 +15,7 @@ const Checkout = () => {
     const [room, setRoom] = useState(null);
     
     const genarateOrderId = "SS-" + Math.floor(Math.random() * 900000 + 100000);
-   const { orderDetails, setOrderDetails,roomBookingDate } = useContext(StoreContext);
+   const { orderDetails, setOrderDetails,roomBookingDate,PreBookingData,setPreBookingData,updateOrderId,setUpdateOrderId} = useContext(StoreContext);
    const {currentUser}=useContext(StoreContext)
    const isPayment=radioValue==='masterCard'?true:false;
    const [addOrder]=useAddOrderMutation()
@@ -32,7 +32,7 @@ const Checkout = () => {
     setFormData(prev => ({
         ...prev,
         payMethod: radioValue,
-        isPayment: radioValue === 'masterCard'
+        isPayment: isPayment,
     }));
 }, [radioValue]);
     
@@ -75,6 +75,7 @@ const normalTime = now.toLocaleTimeString('en-US', {
 });
 const fullDateTime = `${normalDate}, ${normalTime}`;
 //submit preorder
+
 const paymentSubmit = async(e) => {
     e.preventDefault();
 
@@ -95,15 +96,22 @@ const paymentSubmit = async(e) => {
              const finalBookingData = {
             ...formData,
             RoomId: room.id,
-             Price:"PreBooking"
+            Price:room.price
         };
              const bookingDetails={
                 ...finalBookingData,
                     roomBookingDate,
-                    status:"No Status",
+                    status:"not paid",
                     createAt:fullDateTime,
              }
-             addOrder(bookingDetails).unwrap
+          
+         const docRef = await addDoc(
+            collection(db, "orders"),
+            bookingDetails
+        );
+        setUpdateOrderId(docRef.id)
+            
+            setPreBookingData(bookingDetails);
              toast.success('Preorder success')
              window.scrollTo(0, 0);
             
