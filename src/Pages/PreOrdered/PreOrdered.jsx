@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { ArrowRight, BanknoteArrowDown, CheckCircle, Download, Package } from 'lucide-react';
 
 import { Link } from 'react-router';
+import { StoreContext } from '../../Contexts/StoreContext';
 const PreOrdered = () => {
+    const {PreBookingData,updateOrderId}=useContext(StoreContext)
      const genarateOrderId = "SS-" + Math.floor(Math.random() * 900000 + 100000);
     return (
          <div className='py-10 md:py-10 px-4 md:px-16 lg:px-24 xl:px-24 bg-[#fdfdfd] min-h-screen'>
@@ -36,7 +38,8 @@ const PreOrdered = () => {
 
                     
                     <Link 
-                        to="/prepayment" 
+                        to="/prepayment"
+                       state={{orders:{...PreBookingData,id:updateOrderId}}}
                         className="flex items-center justify-center gap-1 bg-gray-100 text-black py-4 rounded-2xl font-bold hover:bg-gray-200 transition"
                     >
                        <BanknoteArrowDown color="#15f4bc" />Make Payment

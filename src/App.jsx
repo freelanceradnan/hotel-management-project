@@ -27,6 +27,8 @@ import Orders from './Pages/UserAccount/Orders/Orders';
 import Prepayment from './Pages/PrePayments/Prepayment';
 import PreOrdered from './Pages/PreOrdered/PreOrdered';
 import PrePaymentSuccess from './Pages/Prepaymentsuccess/PrePaymentSuccess';
+// import Check from './Pages/Check';
+import PrePaymentPage from './Pages/PrePaymentPage/PrePaymentPage';
 
 
 
@@ -57,7 +59,8 @@ const showFooter = !isAdminPath && isKnownRoute;
     <Route path="/" element={<Home/>} />
     <Route path="/rooms" element={<Rooms/>}/>
     <Route path="/invoice" element={<InvoicePage/>}/>
-    <Route path="/prepayment" element={<Prepayment/>}/>
+    <Route path="/prepayment" element={<PrePaymentPage/>}/>
+    {/* <Route path="/check" element={<Check/>}/> */}
     <Route path="/prepaymentsuccess" element={<PrePaymentSuccess/>}/>
     <Route path="/rooms" element={<Rooms/>}/>
     <Route path="/rooms/checkout/:id" element={

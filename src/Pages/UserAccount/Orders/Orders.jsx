@@ -2,10 +2,11 @@ import React, { useContext } from 'react';
 import { useGetSeperateOrderQuery } from '../../../Feature/ApiSlice';
 import { StoreContext } from '../../../Contexts/StoreContext';
 import { Download } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 
 const Orders = () => {
+    const navigate=useNavigate()
     const { currentUser } = useContext(StoreContext);
     const email = currentUser?.email;
     const { data, isLoading } = useGetSeperateOrderQuery(email);
@@ -50,9 +51,13 @@ const Orders = () => {
                             </div>
                             <span
                                 className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase
-                                ${d.status === 'Processing' ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'}`}
+                                ${d.status === 'paid' ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'}`}
                             >
-                                {d.status}
+                                 {d.status=='paid'?<>{d.status}</>:
+                                 
+                                 <><button className='bg-red-600 text-white p-2 rounded-md' type='button' onClick={()=>{
+                                   
+                                 }}>PayNow</button></>}
                             </span>
                         </div>
 
@@ -105,8 +110,13 @@ const Orders = () => {
                                 <td className="px-6 py-5 text-xs text-gray-400 truncate max-w-[200px]" title={d.OrderId}>{d.OrderId}</td>
                                 <td className="px-6 py-5 text-sm font-black whitespace-nowrap">${d.Price}</td>
                                 <td className="px-6 py-5">
-                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${d.status === 'Processing' ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'}`}>
-                                        {d.status}
+                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${d.status === 'Paid' ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'}`}>
+                                        {d.status=='paid'?<>{d.status}</>:
+                                        
+                                        <>
+                                        <Link to="/prepayment" state={{orders:d}}><button className='bg-red-600 text-white p-2 rounded-md' type='button'>PayNow</button>
+                                        </Link>
+                                        </>}
                                     </span>
                                 </td>
                                 <td className="px-6 py-5 text-center">

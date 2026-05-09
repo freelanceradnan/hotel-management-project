@@ -7,7 +7,8 @@ import { auth, db } from '../../Firebase/Firebase';
 import { StoreContext } from '../../Contexts/StoreContext';
 import { useAddOrderMutation, useUpdateOrderMutation } from '../../Feature/ApiSlice';
 
-const Prepayment = () => {
+const Prepayment = ({orders}) => {
+  
 const [loading, setLoading] = useState(false);
   const navigate=useNavigate()
   const {orderDetails,setOrderDetails}=useContext(StoreContext)
@@ -49,17 +50,17 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
       scrollTo(0,0)
     }, 2500);
     const OrderPayload = {
-   ...orderDetails,
+   ...orders,
    isPayment: true,
    payMethod: "MasterCard",
    roomBookingDate,
    createAt: fullDateTime,
    status: "paid",
 };
-
+console.log( orders.id)
       await updateOrder({
    orderData: {
-      id: updateOrderId,
+      id: orders.id,
       OrderPayload
    }
 }).unwrap();

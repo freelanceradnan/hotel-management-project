@@ -59,7 +59,7 @@ export const ApiSlice = createApi({
     }),
        updateOrder: builder.mutation({
   async queryFn({ orderData }) {
-
+  console.log(orderData.id)
     try {
 
       const docRef = doc(
