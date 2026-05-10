@@ -303,7 +303,7 @@ return (
     <input 
       type="checkbox" 
       id="terms"
-      onClick={()=>setChecked(prev=>!prev)}
+      
       className="mt-1 accent-tomato cursor-pointer" 
       required
     />

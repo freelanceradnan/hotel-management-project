@@ -6,11 +6,14 @@ import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/fires
 import { auth, db } from '../../Firebase/Firebase';
 import { StoreContext } from '../../Contexts/StoreContext';
 import { useAddOrderMutation } from '../../Feature/ApiSlice';
-
+import axios from 'axios';
 const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
+  const {currentUser}=useContext(StoreContext);
+ 
   const navigate=useNavigate()
   const {orderDetails,setOrderDetails}=useContext(StoreContext)
+  console.log(orderDetails)
   const [formData, setFormData] = useState({
     name: '',
     cardNumber: '',
@@ -19,6 +22,8 @@ const CheckoutPage = () => {
   });
  const {roomBookingDate,setRoomBookingDate,OrderTime,setOrderTime}=useContext(StoreContext)
  const [addOrder]=useAddOrderMutation()
+//booking email calling
+
  //convert date and time to format
 const now = new Date();
 const normalDate = now.toLocaleDateString('en-GB', {
@@ -52,7 +57,33 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
         createAt:fullDateTime,
         status:"Paid",
     }
+    //data for auto massege
       await addOrder(OrderPayload).unwrap
+      const data = {
+    service_id: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+    template_id: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+    user_id: import.meta.env.VITE_EMAILJS_PUBLIC_KEY, 
+    template_params: {
+      user_name:currentUser.email,
+      order_id:orderDetails.OrderId,
+      user_email: currentUser.email,
+      hotel_name: "QuickStay Luxury Hotel",
+      message: 
+    <div>
+      "আপনার রুম বুকিংটি সফলভাবে সম্পন্ন হয়েছে!"
+    </div>
+      ,
+    }}
+  await axios.post(
+      "https://api.emailjs.com/api/v1.0/email/send",
+      data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+      
       setOrderTime(fullDateTime)
       toast.success('order success done!')
     } catch (error) {

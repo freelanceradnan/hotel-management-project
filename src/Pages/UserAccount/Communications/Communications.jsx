@@ -82,7 +82,7 @@ const Communications = () => {
                     <span className="text-sm font-semibold text-gray-700">{auth?.currentUser?.email}</span>
                   </div>
                   <button className="text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-4 py-2 rounded-full transition-colors">
-                    Change
+                    Permanent
                   </button>
                 </div>
               </div>

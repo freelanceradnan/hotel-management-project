@@ -6,13 +6,14 @@ import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/fires
 import { auth, db } from '../../Firebase/Firebase';
 import { StoreContext } from '../../Contexts/StoreContext';
 import { useAddOrderMutation, useUpdateOrderMutation } from '../../Feature/ApiSlice';
-
+import axios from 'axios';
 const Prepayment = ({orders}) => {
   
 const [loading, setLoading] = useState(false);
+
   const navigate=useNavigate()
   const {orderDetails,setOrderDetails}=useContext(StoreContext)
-  
+  const {currentUser}=useContext(StoreContext)
   
   const [formData, setFormData] = useState({
     name: '',
@@ -64,6 +65,26 @@ console.log( orders.id)
       OrderPayload
    }
 }).unwrap();
+    const data = {
+    service_id: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+    template_id: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+    user_id: import.meta.env.VITE_EMAILJS_PUBLIC_KEY, 
+    template_params: {
+      user_name:currentUser.email,
+      order_id:orders.OrderId||"due",
+      user_email: currentUser.email,
+      hotel_name: "QuickStay Luxury Hotel",
+      
+    }}
+  await axios.post(
+      "https://api.emailjs.com/api/v1.0/email/send",
+      data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
       setOrderTime(fullDateTime)
       toast.success('Payement update Success!')
     } catch (error) {
