@@ -1,25 +1,64 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ArrowLeft, CreditCard, Lock } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
-import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, serverTimestamp, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../Firebase/Firebase';
 import { StoreContext } from '../../Contexts/StoreContext';
-import { useAddOrderMutation } from '../../Feature/ApiSlice';
+import { useAddOrderMutation, useGetUserDataQuery } from '../../Feature/ApiSlice';
 import axios from 'axios';
+import { onAuthStateChanged } from 'firebase/auth';
 const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const {currentUser}=useContext(StoreContext);
- 
+  const [isNotify,setIsNotify]=useState(null)
+  
+  const {data}=useGetUserDataQuery()
   const navigate=useNavigate()
   const {orderDetails,setOrderDetails}=useContext(StoreContext)
-  console.log(orderDetails)
+ 
   const [formData, setFormData] = useState({
     name: '',
     cardNumber: '',
     expiry: '',
     cvv: ''
   });
+  //current user data
+  // useEffect(()=>{
+  //  if(currentUser&& data){
+  //   const userData=data.find(c=>c.email==currentUser.email)
+  //   console.log(userData)
+  //   if(userData){
+  //     setIsNotify(userData.isOrderNotify)
+  //   }
+  //  }
+  // },[currentUser,data])
+  useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const docRef = doc(db, 'users', user.uid); 
+      
+      try {
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+       
+         setIsNotify( docSnap.data().isOrderNotify)
+        } else {
+          console.log("No such document in Firestore!");
+        }
+      } catch (error) {
+        console.error("Error fetching user document:", error);
+      }
+    } else {
+      // Handle logout logic here
+      console.log("User is signed out");
+    }
+  });
+
+  // Cleanup subscription on unmount
+  return () => unsubscribe();
+}, []);
  const {roomBookingDate,setRoomBookingDate,OrderTime,setOrderTime}=useContext(StoreContext)
  const [addOrder]=useAddOrderMutation()
 //booking email calling
@@ -38,58 +77,61 @@ const normalTime = now.toLocaleTimeString('en-US', {
   hour12: true
 });
 const fullDateTime = `${normalDate}, ${normalTime}`;
-  const handlePayment = async(e) => {
-    e.preventDefault();
-    setLoading(true);
+ const handlePayment = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+  
+    const OrderPayload = {
+      ...orderDetails,
+      roomBookingDate,
+      createAt: fullDateTime,
+      status: "Paid",
+    };
+
     
-    // Simulating an API call
-   
-    try {
-      setTimeout(() => {
-      setLoading(false);
-      toast.success("Payment Successful! Your sneakers are on the way.");
-      navigate('/order-success')
-      scrollTo(0,0)
-    }, 2500);
-    const OrderPayload={
-       ...orderDetails,
-        roomBookingDate,
-        createAt:fullDateTime,
-        status:"Paid",
-    }
-    //data for auto massege
-      await addOrder(OrderPayload).unwrap
-      const data = {
-    service_id: import.meta.env.VITE_EMAILJS_SERVICE_ID,
-    template_id: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-    user_id: import.meta.env.VITE_EMAILJS_PUBLIC_KEY, 
-    template_params: {
-      user_name:currentUser.email,
-      order_id:orderDetails.OrderId,
-      user_email: currentUser.email,
-      hotel_name: "QuickStay Luxury Hotel",
-      message: 
-    <div>
-      "আপনার রুম বুকিংটি সফলভাবে সম্পন্ন হয়েছে!"
-    </div>
-      ,
-    }}
-  await axios.post(
-      "https://api.emailjs.com/api/v1.0/email/send",
-      data,
-      {
-        headers: {
-          'Content-Type': 'application/json',
+    await addOrder(OrderPayload).unwrap();
+
+    console.log(isNotify)
+    if (isNotify) {
+      const emailParams = {
+        service_id: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        template_id: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        user_id: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+        template_params: {
+          user_name: currentUser.displayName || currentUser.email, // Use name if available
+          order_id: orderDetails.OrderId,
+          user_email: currentUser.email,
+          hotel_name: "QuickStay Luxury Hotel",
+          message: "আপনার রুম বুকিংটি সফলভাবে সম্পন্ন হয়েছে!", 
         },
-      }
-    )
-      
-      setOrderTime(fullDateTime)
-      toast.success('order success done!')
-    } catch (error) {
-      console.log(error.message)
+      };
+
+      await axios.post(
+        "https://api.emailjs.com/api/v1.0/email/send",
+        emailParams,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
     }
-  };
+
+    
+    setOrderTime(fullDateTime);
+    setLoading(false);
+    toast.success("Payment Successful! Your sneakers are on the way.");
+    
+ 
+    setTimeout(() => {
+      navigate('/order-success');
+      window.scrollTo(0, 0);
+    }, 500);
+
+  } catch (error) {
+    setLoading(false);
+    console.error("Payment/Notification Error:", error.message);
+    toast.error("Something went wrong. Please try again.");
+  }
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;

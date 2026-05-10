@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { assets } from '../../assets/assets';
 import { X } from 'lucide-react';
 import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect } from 'firebase/auth';
-import { auth, db } from '../../Firebase/Firebase';
-
+import { auth, db} from '../../Firebase/Firebase';
+import { doc,getDoc,setDoc } from 'firebase/firestore';
 import { GoogleAuthProvider } from "firebase/auth";
 import { toast } from 'react-toastify';
-import { doc, setDoc } from 'firebase/firestore';
+// import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router';
 const SignupModal = ({setIsModal}) => {
   const navigate=useNavigate()
@@ -40,7 +40,9 @@ const SignupModal = ({setIsModal}) => {
    if(auth.currentUser){
     await setDoc(doc(db,'users',auth.currentUser.uid),{
       email:singupData.email,
-      role:"user"
+      role:"user",
+      isOrderNotify: true,
+      createdAt: new Date().toISOString()
     })
     setIsModal(false)
     toast.success('Signup Success!', {
@@ -165,31 +167,32 @@ const SignupModal = ({setIsModal}) => {
   
   
   }
-  const singInWithGoogle = async () => {
+const singInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
-    if (result.user) {
-  const userRef = doc(db, 'users', result.user.uid);
-  const userSnap = await getDoc(userRef);
-  if (!userSnap.exists()) {
-    await setDoc(userRef, {
-      email: result.user.email,
-      role: "user",
-      createdAt: new Date()
-    });
-  } else {
-    console.log("Existing user logged in. Data preserved.");
-  }
+    const user = result.user; 
 
-  toast.success('Google Login Success!', {
-    style: { backgroundColor: '#ff8c00', color: '#ffffff' },
-  });
-  setIsModal(false);
-}
+    if (user) {
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+       
+        await setDoc(userRef, {
+          email: user.email,
+          role: "user",
+          isOrderNotify: true,
+          createdAt: new Date().toISOString() 
+        });
+        console.log("New user created in Firestore!");
+      }
+
+      toast.success('Google Login Success!');
+      setIsModal(false);
+    }
   } catch (error) {
-     toast.error(error.code, {
-              style: { backgroundColor: '#ff8c00', color: '#ffffff' },
-            });
+    console.error("Firestore Error:", error); 
+    toast.error(error.message);
   }
 };
 //reset password states
@@ -315,7 +318,7 @@ return (
         </div>
 
         {/* Submit */}
-       {checked && <>
+   
        {signupLoading? <h2 className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center">
         Creating user...
        </h2>:
@@ -323,7 +326,7 @@ return (
           Register now
         </button>
        }
-       </>}
+       
 
         <p className="text-center text-slate-500 text-sm mt-2">
           Don’t have an account? <button type="button" className="text-indigo-600 font-bold hover:underline" onClick={()=>setCurrentPage('login')}>
