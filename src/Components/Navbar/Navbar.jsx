@@ -71,14 +71,19 @@ if (loading) {
                 {/* Desktop Nav */}
                 <div className="hidden md:flex items-center gap-4 lg:gap-8">
                     {navLinks.map((link, i) => (
-                        <Link key={i} to={link.path} onClick={()=>scrollTo(0,0)} className={`group flex flex-col gap-0.5 ${isScrolled ? "text-gray-700" : "text-white"} `}>
+                        <Link key={i} to={link.path} onClick={()=>scrollTo(0,0)} className={`group flex flex-col ${isScrolled ? "text-gray-700" : "text-white"} `}>
                             {link.name}
                             <div className={`${isScrolled ? "bg-gray-700" : "bg-white"} h-0.5 w-0 group-hover:w-full transition-all duration-300`} />
                         </Link>
                     ))}
-                    <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`}>
+                   
+                    {isLogin && role=='user' &&
+                    <Link to="/listing" className={`${isScrolled ? "text-gray-700" : "text-white"}`}>Listing</Link>
+                    }
+                  
+                    {/* <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`}>
                       Dashboard
-                    </button>
+                    </button> */}
                 </div>
 
                 {/* Desktop Right */}
@@ -282,9 +287,9 @@ if (loading) {
                         </Link>
                     ))}
 
-                    <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all">
+                    {/* <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all">
                         Dashboard
-                    </button>
+                    </button> */}
 
                     {!currentUser && !isLogin &&(
                       <button className="bg-black text-white px-8 py-2.5 rounded-full transition-all duration-500" onClick={()=>{
