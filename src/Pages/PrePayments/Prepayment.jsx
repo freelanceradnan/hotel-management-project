@@ -1,16 +1,42 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ArrowLeft, CreditCard, Lock } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
-import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db } from '../../Firebase/Firebase';
 import { StoreContext } from '../../Contexts/StoreContext';
 import { useAddOrderMutation, useUpdateOrderMutation } from '../../Feature/ApiSlice';
 import axios from 'axios';
+import { onAuthStateChanged } from 'firebase/auth';
 const Prepayment = ({orders}) => {
-  
+  const [isNotify,setIsNotify]=useState(null) 
 const [loading, setLoading] = useState(false);
+  useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const docRef = doc(db, 'users', user.uid); 
+      
+      try {
+        const docSnap = await getDoc(docRef);
 
+        if (docSnap.exists()) {
+      
+         setIsNotify( docSnap.data().isOrderNotify)
+        } else {
+          console.log("No such document in Firestore!");
+        }
+      } catch (error) {
+        console.error("Error fetching user document:", error);
+      }
+    } else {
+      // Handle logout logic here
+      console.log("User is signed out");
+    }
+  });
+
+  // Cleanup subscription on unmount
+  return () => unsubscribe();
+}, []);
   const navigate=useNavigate()
   const {orderDetails,setOrderDetails}=useContext(StoreContext)
   const {currentUser}=useContext(StoreContext)
@@ -44,12 +70,7 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
     // Simulating an API call
    
     try {
-      setTimeout(() => {
-      setLoading(false);
-      toast.success("Payment Successful! Your sneakers are on the way.");
-      navigate('/prepaymentsuccess')
-      scrollTo(0,0)
-    }, 2500);
+    
     const OrderPayload = {
    ...orders,
    isPayment: true,
@@ -58,34 +79,40 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
    createAt: fullDateTime,
    status: "paid",
 };
-console.log( orders.id)
       await updateOrder({
    orderData: {
       id: orders.id,
       OrderPayload
    }
 }).unwrap();
-    const data = {
-    service_id: import.meta.env.VITE_EMAILJS_SERVICE_ID,
-    template_id: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-    user_id: import.meta.env.VITE_EMAILJS_PUBLIC_KEY, 
-    template_params: {
-      user_name:currentUser.email,
-      order_id:orders.OrderId||"due",
-      user_email: currentUser.email,
-      hotel_name: "QuickStay Luxury Hotel",
-      
-    }}
-  await axios.post(
-      "https://api.emailjs.com/api/v1.0/email/send",
-      data,
-      {
-        headers: {
-          'Content-Type': 'application/json',
+  if (isNotify) {
+      const emailParams = {
+        service_id: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        template_id: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        user_id: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+        template_params: {
+          user_name: currentUser.displayName || currentUser.email, // Use name if available
+          order_id: orderDetails.OrderId,
+          user_email: currentUser.email,
+          hotel_name: "QuickStay Luxury Hotel",
+          message: "আপনার রুম বুকিংটি সফলভাবে সম্পন্ন হয়েছে!", 
         },
-      }
-    )
+      };
+
+      await axios.post(
+        "https://api.emailjs.com/api/v1.0/email/send",
+        emailParams,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+     
       setOrderTime(fullDateTime)
+      setTimeout(() => {
+      setLoading(false);
+      toast.success("Payment Successful! Your sneakers are on the way.");
+      navigate('/prepaymentsuccess')
+      scrollTo(0,0)
+    }, 500);
       toast.success('Payement update Success!')
     } catch (error) {
       console.log(error.message)

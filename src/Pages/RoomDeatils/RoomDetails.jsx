@@ -35,15 +35,16 @@ const RoomDetails = () => {
              toast.error('checkin must be less then checkout!')
             
         }
-        if(room.capacity<guestNumber){
-        toast.error('guest member big then room capacity!')
-       
-        }
-        else{
+         else{
              toast.success('room available for you! Reserve Now')
              setRoomBookingDate({...roomBookingDate,checkin:checkin,checkout:checkout,guest:guestNumber})
             setStep(2)
         }
+        if(room.capacity<guestNumber){
+        toast.error('guest member big then room capacity!')
+       
+        }
+       
        } catch (error) {
         
        }

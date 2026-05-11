@@ -18,7 +18,7 @@ const Navbar = ({setIsModal,isModal}) => {
     ];
 
     const ref = React.useRef(null)
-
+    // const {currentUser}=useContext(StoreContext)
     const [isScrolled, setIsScrolled] = useState(false);
     
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -121,8 +121,8 @@ if (loading) {
       <MenuItem>
       <div className="flex items-center justify-between pb-2">
      <div>
-       <p className="font-[700]"> Hi, Mahim</p>
-       <p className="text-[14px]">mahimshaharia@gmail.com</p>
+       <p className="font-[700]"> Hi,user!</p>
+       <p className="text-[14px]">{currentUser.email}</p>
      </div>
      <p className="text-white bg-blue-800 px-2 rounded-sm text-[12px] font-semibold p-1">User</p>
       </div>
