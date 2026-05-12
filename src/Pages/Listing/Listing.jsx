@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
 import { uploadToCloudinary } from '../../utils/cloudinary';
 import { toast } from 'react-toastify';
-import { addDoc, collection, doc } from 'firebase/firestore';
+import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { StoreContext } from '../../Contexts/StoreContext';
 import { db } from '../../Firebase/Firebase';
+import { useNavigate } from 'react-router';
 
 const Listing = () => {
     const {currentUser}=useContext(StoreContext)
+    const navigate=useNavigate();
     const [listingData, setListingData] = useState({
         name: "",
         price: "",
@@ -20,7 +22,7 @@ const Listing = () => {
     const [submitting, setSubmitting] = useState(false);
     const [selectedService, setSelectedService] = useState("");
 
-    // সাধারণ ইনপুট হ্যান্ডলার
+ 
     const changeHandler = (e) => {
         const { name, value } = e.target;
         setListingData((prev) => ({
@@ -29,7 +31,7 @@ const Listing = () => {
         }));
     };
 
-    // ইমেজ আপলোড হ্যান্ডলার (একসাথে একাধিক ফাইল হ্যান্ডেল করার জন্য)
+  
     const handleImageUpload = async (e) => {
         const files = Array.from(e.target.files);
         
@@ -43,7 +45,7 @@ const Listing = () => {
 
             setListingData(prev => ({
                 ...prev,
-                image: [...prev.image, ...urls].slice(0, 4) // সর্বোচ্চ ৪টি ছবি
+                image: [...prev.image, ...urls].slice(0, 4) 
             }));
             toast.success("Images uploaded successfully!");
         } catch (error) {
@@ -53,7 +55,7 @@ const Listing = () => {
         }
     };
 
-    // সার্ভিস অ্যারেতে যোগ করার ফাংশন
+ 
     const addService = (e) => {
         e.preventDefault();
         if (selectedService && !listingData.services.includes(selectedService)) {
@@ -72,7 +74,12 @@ const Listing = () => {
             ...listingData,
             owner:currentUser.email,
         })
+        const userRef=doc(db,'users',currentUser.uid)
+        await updateDoc(userRef,{
+          isListing:true
+        })
         toast.success("room added!")
+        navigate('/rooms')
     } catch (error) {
         console.log("error is",error.message);
     }

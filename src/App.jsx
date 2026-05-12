@@ -30,6 +30,7 @@ import PrePaymentSuccess from './Pages/Prepaymentsuccess/PrePaymentSuccess';
 // import Check from './Pages/Check';
 import PrePaymentPage from './Pages/PrePaymentPage/PrePaymentPage';
 import Listing from './Pages/Listing/Listing';
+import UserDashboard from './Pages/UserDashboard/UserDashboard';
 
 
 
@@ -43,7 +44,7 @@ const [isModal,setIsModal]=useState(false)
 
 //footer hide and navbar hide logic
 const allRoutes = [
-    "/", "/rooms", "/payment", "/preorder", "/order-success", "/favourites", "/myAccount","/invoice","/prepayment","/prepaymentsuccess","/listing"
+    "/", "/rooms", "/payment", "/preorder", "/order-success", "/favourites", "/myAccount","/invoice","/prepayment","/prepaymentsuccess","/listing","/userDashboard"
   ];
 const isKnownRoute = allRoutes.some(path => location.pathname === path) || 
                        location.pathname.startsWith("/rooms/") || 
@@ -60,6 +61,7 @@ const showFooter = !isAdminPath && isKnownRoute;
     <Route path="/" element={<Home/>} />
     <Route path="/rooms" element={<Rooms/>}/>
     <Route path="/invoice" element={<InvoicePage/>}/>
+    <Route path="/userDashboard" element={<UserDashboard/>}/>
     <Route path="/prepayment" element={<PrePaymentPage/>}/>
     <Route path="/listing" element={<Listing/>}/>
     {/* <Route path="/check" element={<Check/>}/> */}

@@ -1,14 +1,46 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { assets } from "../../assets/assets";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { StoreContext } from "../../Contexts/StoreContext";
-import { signOut } from "firebase/auth";
-import { auth } from "../../Firebase/Firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth, db } from "../../Firebase/Firebase";
 import { User } from "lucide-react";
+import { useGetUserDataQuery } from "../../Feature/ApiSlice";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 // import { Link } from "react-router";
 const Navbar = ({setIsModal,isModal}) => {
+  const{data}=useGetUserDataQuery()
+  const [isListing,setIsListing]=useState(null)
   const {currentUser,role,isLogin,loading}=useContext(StoreContext)
+  console.log(isListing)
+  // useEffect(()=>{
+  //  if(currentUser&& data){
+  //   const userData=data.filter((c)=>c.email==currentUser.email)
+  //  setIsListing(userData[0].isListing)
+  //  }
+  // },[currentUser,data])
+
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      
+      const unsubDoc = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
+        if (docSnap.exists()) {
+          setIsListing(docSnap.data().isListing);
+        }
+      });
+      
+  
+      return () => unsubDoc();
+    } else {
+      setIsListing(false);
+    }
+  });
+
+  return () => unsubscribe();
+}, []);
+
   const navigate=useNavigate()
     const navLinks = [
         { name: 'Home', path: '/' },
@@ -77,9 +109,11 @@ if (loading) {
                         </Link>
                     ))}
                    
+                    {isListing?<Link to="/userDashboard" className={`${isScrolled ? "text-gray-700" : "text-white"} pb-0.5`}>Dashboard</Link>:<>
                     {isLogin && role=='user' &&
                     <Link to="/listing" className={`${isScrolled ? "text-gray-700" : "text-white"}`}>Listing</Link>
                     }
+                    </>}
                   
                     {/* <button className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'} transition-all`}>
                       Dashboard
@@ -285,8 +319,13 @@ if (loading) {
                         <Link key={i} to={link.path} onClick={() => setIsMenuOpen(false)}>
                             {link.name}
                         </Link>
+                        
                     ))}
-
+                        {isListing?<Link to="/userDashboard" className={`text-white bg-blue-500 rounded-sm p-1`}  onClick={() => setIsMenuOpen(false)}>Dashboard</Link>:<>
+                    {isLogin && role=='user' &&
+                    <Link to="/listing" className={`text-white bg-blue-500 rounded-sm p-1`}  onClick={() => setIsMenuOpen(false)}>Listing</Link>
+                    }
+                    </>}
                     {/* <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all">
                         Dashboard
                     </button> */}

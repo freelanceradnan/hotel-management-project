@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
 import { useGetSeperateOrderQuery } from '../../../Feature/ApiSlice';
 import { StoreContext } from '../../../Contexts/StoreContext';
-import { Download } from 'lucide-react';
+import { Download, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 
 
 const Orders = () => {
@@ -53,7 +54,7 @@ const Orders = () => {
                                 className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase
                                 ${d.status === 'paid' ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'}`}
                             >
-                                 {d.status=='paid'?<>{d.status}</>:
+                                  {d.status=='Paid'||d.status=='paid'?<>{d.status}</>:
                                  
                                  <><button className='bg-red-600 text-white p-2 rounded-md' type='button' onClick={()=>{
                                    
@@ -78,10 +79,15 @@ const Orders = () => {
                                 <p className="text-lg font-black text-gray-900">${d.Price}</p>
                             </div>
                             <button className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-gray-800 transition">
+                                {d.status=='Paid'||d.status=='paid'?
+                            
+                                
                                 <Link to="/invoice" state={{orders:d}}>
                                 <Download size={14} />
                                 Invoice
-                                </Link>
+                                </Link>  :
+                                <button onClick={()=>toast.error("invoice disabled please pay first due!")}><X size={14}/></button>  
+                            }
                                 
                             </button>
                         </div>
@@ -111,7 +117,7 @@ const Orders = () => {
                                 <td className="px-6 py-5 text-sm font-black whitespace-nowrap">${d.Price}</td>
                                 <td className="px-6 py-5">
                                     <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${d.status === 'Paid' ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'}`}>
-                                        {d.status=='paid'?<>{d.status}</>:
+                                        {d.status=='Paid'||d.status=='paid'?<>{d.status}</>:
                                         
                                         <>
                                         <Link to="/prepayment" state={{orders:d}}><button className='bg-red-600 text-white p-2 rounded-md' type='button'>PayNow</button>
@@ -121,7 +127,15 @@ const Orders = () => {
                                 </td>
                                 <td className="px-6 py-5 text-center">
                                     <button className="p-2 rounded-lg hover:bg-black hover:text-white text-gray-400 transition">
-                                        <Link to="/invoice" state={{orders:d}}><Download size={18}/></Link>
+                                         {d.status=='Paid'||d.status=='paid'?
+                            
+                                
+                                <Link to="/invoice" state={{orders:d}}>
+                                <Download size={14} />
+                                Invoice
+                                </Link>  :
+                                <button onClick={()=>toast.error("invoice disabled please pay first due!")}><X size={14}/></button>  
+                            }
                                     </button>
                                 </td>
                             </tr>
