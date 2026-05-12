@@ -77,76 +77,218 @@ const Listing = () => {
         console.log("error is",error.message);
     }
  }
-    return (
-        <div className='pt-28 md:pt-35 px-4 md:px-16 lg:px-24 xl:px-32'>
-            <h2 className='font-playfair text-4xl md:text-[40px]'>Listing Your Hotels Room!</h2>
-            <p className='text-sm md:text-base text-gray-500/90 mt-2'>Add your room details correctly.</p>
 
-            <div className='py-10'>
-                <form onSubmit={(e) => e.preventDefault(),submitHandler}>
-                    {/* Name & Price */}
-                    <div className='flex flex-col gap-4 mb-4'>
-                        <label>Room Name</label>
-                        <input type="text" name="name" className='border p-2' value={listingData.name} onChange={changeHandler} />
-                        
-                        <label>Price</label>
-                        <input type="number" name="price" className='border p-2' value={listingData.price} onChange={changeHandler} />
-                        <label>location</label>
-                        <input type="text" name="location" className='border p-2' value={listingData.location} onChange={changeHandler} />
-                    </div>
+        return (
+  <div className="min-h-screen bg-gray-50 pt-28 px-4 md:px-10 lg:px-24">
+    <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-3xl overflow-hidden">
 
-                    {/* Room Type & Capacity */}
-                    <div className='mb-4'>
-                        <label>Room Type</label>
-                        <select name="roomType" className='border p-2 block' value={listingData.roomType} onChange={changeHandler}>
-                            <option value="">--Select type--</option>
-                            <option value="Single Bed">Single Bed</option>
-                            <option value="Double Bed">Double Bed</option>
-                        </select>
-                    </div>
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-white">
+        <h1 className="text-4xl font-bold">
+          List Your Hotel Room
+        </h1>
+        <p className="mt-2 text-blue-100">
+          Add your room details correctly to attract more guests.
+        </p>
+      </div>
 
-                    <div className='mb-4'>
-                        <label>Capacity</label>
-                        <input type="number" name="capacity" min={1} className='border p-2' value={listingData.capacity} onChange={changeHandler} />
-                    </div>
+      {/* Form */}
+      <form
+        onSubmit={submitHandler}
+        className="p-6 md:p-10 space-y-8"
+      >
 
-                    {/* Image Section */}
-                    <div className='mb-4'>
-                        <h2>Upload Images (Select up to 4)</h2>
-                        <input type="file" multiple accept='image/*' onChange={handleImageUpload} disabled={submitting} />
-                        {submitting && <p className='text-blue-500'>Uploading...</p>}
-                        <div className='flex gap-2 mt-2'>
-                            {listingData.image.map((img, index) => (
-                                <img key={index} src={img} alt="preview" className='w-20 h-20 object-cover border' />
-                            ))}
-                        </div>
-                    </div>
+        {/* Basic Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    {/* Services Section */}
-                    <div className='mb-4'>
-                        <label>Services (At least 3)</label>
-                        <div className='flex gap-2'>
-                            <select className='border p-2' value={selectedService} onChange={(e) => setSelectedService(e.target.value)}>
-                                <option value="">--Select Service--</option>
-                                <option value="Free WiFi">Free WiFi</option>
-                                <option value="Free Breakfast">Free Breakfast</option>
-                                <option value="Room Service">Room Service</option>
-                            </select>
-                            <button onClick={addService} className='bg-black text-white px-4 py-1 rounded'>Add</button>
-                        </div>
-                        <div className='mt-2 flex gap-2'>
-                            {listingData.services.map((s, i) => (
-                                <span key={i} className='bg-gray-200 px-2 py-1 text-sm rounded'>{s}</span>
-                            ))}
-                        </div>
-                    </div>
+          <div>
+            <label className="block mb-2 font-semibold text-gray-700">
+              Room Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={listingData.name}
+              onChange={changeHandler}
+              placeholder="Luxury Deluxe Room"
+              className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
 
-                    <button className='bg-blue-600 p-2 text-white rounded-sm w-full mt-5' disabled={submitting} type='submit'>
-                        {submitting ? "Uploading..." : "List Room"}
-                    </button>
-                </form>
-            </div>
+          <div>
+            <label className="block mb-2 font-semibold text-gray-700">
+              Price Per Night
+            </label>
+            <input
+              type="number"
+              name="price"
+              value={listingData.price}
+              onChange={changeHandler}
+              placeholder="$120"
+              className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 font-semibold text-gray-700">
+              Location
+            </label>
+            <input
+              type="text"
+              name="location"
+              value={listingData.location}
+              onChange={changeHandler}
+              placeholder="Dhaka, Bangladesh"
+              className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 font-semibold text-gray-700">
+              Capacity
+            </label>
+            <input
+              type="number"
+              min={1}
+              name="capacity"
+              value={listingData.capacity}
+              onChange={changeHandler}
+              placeholder="2 Guests"
+              className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
         </div>
+
+        {/* Room Type */}
+        <div>
+          <label className="block mb-2 font-semibold text-gray-700">
+            Room Type
+          </label>
+
+          <select
+            name="roomType"
+            value={listingData.roomType}
+            onChange={changeHandler}
+            className="w-full md:w-1/2 border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+          >
+            <option value="">Select Room Type</option>
+            <option value="Single Bed">Single Bed</option>
+            <option value="Double Bed">Double Bed</option>
+          </select>
+        </div>
+
+        {/* Upload Images */}
+        <div>
+          <label className="block mb-3 font-semibold text-gray-700">
+            Upload Images
+          </label>
+
+          <div className="border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center hover:border-blue-500 transition">
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={submitting}
+              className="w-full"
+            />
+
+            <p className="text-sm text-gray-500 mt-2">
+              Upload up to 4 high-quality room images
+            </p>
+          </div>
+
+          {submitting && (
+            <p className="text-blue-500 mt-3 animate-pulse">
+              Uploading images...
+            </p>
+          )}
+
+          {/* Image Preview */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5">
+            {listingData.image.map((img, index) => (
+              <div
+                key={index}
+                className="relative group overflow-hidden rounded-2xl shadow"
+              >
+                <img
+                  src={img}
+                  alt="preview"
+                  className="w-full h-32 object-cover group-hover:scale-105 transition duration-300"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Services */}
+        <div>
+          <label className="block mb-3 font-semibold text-gray-700">
+            Services & Amenities
+          </label>
+
+          <div className="flex flex-col md:flex-row gap-3">
+            <select
+              value={selectedService}
+              onChange={(e) => setSelectedService(e.target.value)}
+              className="border border-gray-300 rounded-xl p-3 flex-1 focus:ring-2 focus:ring-blue-500 outline-none"
+            >
+              <option value="">Select Service</option>
+              <option value="Free WiFi">Free WiFi</option>
+              <option value="Free Breakfast">Free Breakfast</option>
+              <option value="Room Service">Room Service</option>
+              <option value="Swimming Pool">Swimming Pool</option>
+              <option value="Air Conditioning">Air Conditioning</option>
+            </select>
+
+            <button
+              onClick={addService}
+              className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl transition"
+            >
+              Add Service
+            </button>
+          </div>
+
+          {/* Service Tags */}
+          <div className="flex flex-wrap gap-3 mt-5">
+            {listingData.services.map((service, index) => (
+              <div
+                key={index}
+                className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full flex items-center gap-2"
+              >
+                <span>{service}</span>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setListingData((prev) => ({
+                      ...prev,
+                      services: prev.services.filter(
+                        (_, i) => i !== index
+                      ),
+                    }))
+                  }
+                  className="text-red-500 font-bold"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:opacity-90 text-white py-4 rounded-2xl text-lg font-semibold transition-all duration-300 shadow-lg"
+        >
+          {submitting ? "Uploading..." : "List Room"}
+        </button>
+      </form>
+    </div>
+  </div>
+
     );
 };
 
