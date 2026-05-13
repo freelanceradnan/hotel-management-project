@@ -13,7 +13,7 @@ const Navbar = ({setIsModal,isModal}) => {
   const{data}=useGetUserDataQuery()
   const [isListing,setIsListing]=useState(null)
   const {currentUser,role,isLogin,loading}=useContext(StoreContext)
-  console.log(isListing)
+  // console.log(isListing)
   // useEffect(()=>{
   //  if(currentUser&& data){
   //   const userData=data.filter((c)=>c.email==currentUser.email)

@@ -30,8 +30,9 @@ import PrePaymentSuccess from './Pages/Prepaymentsuccess/PrePaymentSuccess';
 // import Check from './Pages/Check';
 import PrePaymentPage from './Pages/PrePaymentPage/PrePaymentPage';
 import Listing from './Pages/Listing/Listing';
-import UserDashboard from './Pages/UserDashboard/UserDashboard';
-
+// import UserDashboard from './Pages/UserDashboard/UserDashboard/UserDashboard';
+import UserDashboard from './Pages/UserDashboard/UserDashboard/UserDashboard'
+import MyStatistics from './Pages/UserDashboard/My Statistics/MyStatistics';
 
 
 
@@ -44,7 +45,7 @@ const [isModal,setIsModal]=useState(false)
 
 //footer hide and navbar hide logic
 const allRoutes = [
-    "/", "/rooms", "/payment", "/preorder", "/order-success", "/favourites", "/myAccount","/invoice","/prepayment","/prepaymentsuccess","/listing","/userDashboard"
+    "/", "/rooms", "/payment", "/preorder", "/order-success", "/favourites", "/myAccount","/invoice","/prepayment","/prepaymentsuccess","/listing","/userDashboard","/userDashboard/manage","/userDashboard/bookings","/userDashboard/revenue","/userDashboard/contact-admin"
   ];
 const isKnownRoute = allRoutes.some(path => location.pathname === path) || 
                        location.pathname.startsWith("/rooms/") || 
@@ -61,7 +62,13 @@ const showFooter = !isAdminPath && isKnownRoute;
     <Route path="/" element={<Home/>} />
     <Route path="/rooms" element={<Rooms/>}/>
     <Route path="/invoice" element={<InvoicePage/>}/>
-    <Route path="/userDashboard" element={<UserDashboard/>}/>
+    <Route path="/userDashboard" element={<UserDashboard/>}>
+    <Route path="" element={<MyStatistics/>} index="true"/>
+    <Route path="manage" element={<h2>this is manage</h2>} />
+    <Route path="bookings" element={<h2>this is bookings</h2>} />
+    <Route path="revenue" element={<h2>this is revenue</h2>} />
+    <Route path="contact-admin" element={<h2>this is contact-admin</h2>} />
+    </Route>
     <Route path="/prepayment" element={<PrePaymentPage/>}/>
     <Route path="/listing" element={<Listing/>}/>
     {/* <Route path="/check" element={<Check/>}/> */}
