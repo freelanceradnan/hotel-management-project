@@ -12,6 +12,7 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@headlessui/react": "^2.2.10",
+    "@recharts/devtools": "^0.0.13",
     "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/vite": "^4.2.4",
     "axios": "^1.16.0",
