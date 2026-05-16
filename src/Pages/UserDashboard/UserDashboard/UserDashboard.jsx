@@ -48,9 +48,9 @@ const UserDashboard = () => {
     },
   ];
   return (
-    <div className="">
+    <div className="w-full min-h-screen bg-[#fdfdfd]">
       {/* nav */}
-      <div className="lg:flex">
+      <div className="lg:flex w-full">
         <div className="shrink-0 py-28 md:py-35 px-4 md:px-16 lg:px-24 xl:px-24 bg-[#fdfdfd]">
         <nav className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <ul className="flex flex-col">
@@ -96,7 +96,7 @@ const UserDashboard = () => {
           </ul>
         </nav>
       </div>
-      <div className="lg:py-26 px-2 md:px-16 lg:px-0">
+      <div className="lg:py-26 px-2 md:px-16 lg:px-4 w-full">
         <Outlet/>
       </div>
       </div>

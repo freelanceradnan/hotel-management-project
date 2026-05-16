@@ -5,10 +5,12 @@ import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { StoreContext } from '../../Contexts/StoreContext';
 import { db } from '../../Firebase/Firebase';
 import { useNavigate } from 'react-router';
+import { useAddRoomMutation } from '../../Feature/ApiSlice';
 
 const Listing = () => {
     const {currentUser}=useContext(StoreContext)
     const navigate=useNavigate();
+    const [addRoom]=useAddRoomMutation()
     const [listingData, setListingData] = useState({
         name: "",
         price: "",
@@ -69,11 +71,16 @@ const Listing = () => {
  const submitHandler=async(e)=>{
     e.preventDefault();
     try {
-        const docRef=collection(db,'rooms')
-        await addDoc(docRef,{
-            ...listingData,
-            owner:currentUser.email,
-        })
+        // const docRef=collection(db,'rooms')
+        const currentRoomData={
+          ...listingData,
+          owner:currentUser?.email
+        }
+        addRoom(currentRoomData).unwrap()
+        // await addDoc(docRef,{
+        //     ...listingData,
+        //     owner:currentUser.email,
+        // })
         const userRef=doc(db,'users',currentUser.uid)
         await updateDoc(userRef,{
           isListing:true
