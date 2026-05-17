@@ -59,7 +59,7 @@ export const ApiSlice = createApi({
 
     updateOrder: builder.mutation({
       async queryFn({ orderData }) {
-        console.log("Updating order ID:", orderData?.id);
+        
         try {
           const docRef = doc(db, "orders", orderData.id);
           await updateDoc(docRef, orderData.OrderPayload);
@@ -163,6 +163,19 @@ export const ApiSlice = createApi({
       },
       invalidatesTags: ['rooms'] 
     }),
+    updateOrderPayment:builder.mutation({
+      async queryFn({id,value}){
+      
+        try {
+    const updateRef=doc(db,'orders',id)
+    await updateDoc(updateRef,{isPayment:value})
+    return { data: 'success' };
+   } catch (error) {
+    return {error: error.message||"message"}
+   }
+      },
+      invalidatesTags:['orders']
+    })
   })
 });
 
@@ -176,5 +189,6 @@ export const {
   useGetAllOrdersDataQuery,
   useDeleteSeperateRoomMutation,
   useAddRoomMutation,
-  useUpdateRoomMutation
+  useUpdateRoomMutation,
+  useUpdateOrderPaymentMutation
 } = ApiSlice;

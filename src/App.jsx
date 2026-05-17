@@ -35,6 +35,8 @@ import UserDashboard from './Pages/UserDashboard/UserDashboard/UserDashboard'
 import MyStatistics from './Pages/UserDashboard/My Statistics/MyStatistics';
 import Management from './Pages/UserDashboard/Menagement/Management';
 import EditPage from './Pages/UserDashboard/EditPage/EditPage';
+import Bookings from './Pages/UserDashboard/Bookings/Bookings';
+// import BookingEdit from './Pages/UserDashboard/BookingEdit/BookingEdit';
 
 
 
@@ -47,11 +49,17 @@ const [isModal,setIsModal]=useState(false)
 
 //footer hide and navbar hide logic
 const allRoutes = [
-    "/", "/rooms", "/payment", "/preorder", "/order-success", "/favourites", "/myAccount","/invoice","/prepayment","/prepaymentsuccess","/listing","/userDashboard","/userDashboard/manage","/userDashboard/bookings","/userDashboard/revenue","/userDashboard/contact-admin",
-  ];
+  "/", "/rooms", "/payment", "/preorder", "/order-success", "/favourites", 
+  "/myAccount", "/invoice", "/prepayment", "/prepaymentsuccess", "/listing",
+  "/userDashboard", "/userDashboard/manage", "/userDashboard/bookings", 
+  "/userDashboard/revenue", "/userDashboard/contact-admin"
+];
+
 const isKnownRoute = allRoutes.some(path => location.pathname === path) || 
-                       location.pathname.startsWith("/rooms/") || 
-                       location.pathname.startsWith("/myAccount/");
+                     location.pathname.startsWith("/rooms/") || 
+                     location.pathname.startsWith("/myAccount/") ||
+                     location.pathname.startsWith("/userDashboard/bookings/"); 
+
 const showFooter = !isAdminPath && isKnownRoute;
   return (
   <>
@@ -67,7 +75,8 @@ const showFooter = !isAdminPath && isKnownRoute;
     <Route path="/userDashboard" element={<UserDashboard/>}>
     <Route path="" element={<MyStatistics/>} index="true"/>
     <Route path="manage" element={<Management/>} />
-    <Route path="bookings" element={<h2>this is bookings</h2>} />
+    <Route path="bookings" element={<Bookings/>} />
+    {/* <Route path="bookings/:id" element={<BookingEdit/>} /> */}
     <Route path="revenue" element={<h2>this is revenue</h2>} />
     <Route path="contact-admin" element={<h2>this is contact-admin</h2>} />
     </Route>
