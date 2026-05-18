@@ -10,7 +10,7 @@ const Management = () => {
     const email = currentUser?.email;
     const { data: totalRooms = [], isLoading } = useGetSeperateOrderWithEmailQuery(email);
     const [deleteRoom] = useDeleteSeperateRoomMutation();
-
+     
     const deleteHandler = async (roomId) => {
         if (window.confirm("Are you sure you want to delete this room listing?")) {
             try {

@@ -103,7 +103,7 @@ const EditPage = () => {
     const submitHandler = async (e) => {
         e.preventDefault();
         try {
-            // Note: Added missing () to invoke .unwrap()
+            
             await update({ roomdata: editableData, id: id }).unwrap();
             toast.success('Room updated successfully!');
             navigate('/userDashboard/manage');

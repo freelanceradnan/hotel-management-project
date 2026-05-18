@@ -1,6 +1,7 @@
 import {
   BookCheck,
   ChevronRight,
+  Contact,
   FileChartColumn,
   SmartphoneNfc,
   SquareKanban,
@@ -35,16 +36,16 @@ const UserDashboard = () => {
       icon: <BookCheck size={15} />,
     },
     {
-      title: "Revenue Report",
-      disc: "Checkout Your Live Revenue",
-      to: "/revenue",
-      icon: <BookCheck size={15} />,
+      title: "Request Payout",
+      disc: "Request Withdrawal",
+      to: "/requestPayout",
+      icon: <SmartphoneNfc size={15} />,
     },
     {
       title: "Contact Admin",
       disc: "Contact Your Web Admin",
-      to: "/contact-admin",
-      icon: <SmartphoneNfc size={15} />,
+      to: "/requestedAdmin",
+      icon: <Contact size={15}/>,
     },
   ];
   return (

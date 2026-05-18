@@ -36,6 +36,8 @@ import MyStatistics from './Pages/UserDashboard/My Statistics/MyStatistics';
 import Management from './Pages/UserDashboard/Menagement/Management';
 import EditPage from './Pages/UserDashboard/EditPage/EditPage';
 import Bookings from './Pages/UserDashboard/Bookings/Bookings';
+import RequestPayout from './Pages/UserDashboard/RequestPayout/RequestPayout';
+import ContactAdmin from './Pages/UserDashboard/ContactAdmin/ContactAdmin';
 // import BookingEdit from './Pages/UserDashboard/BookingEdit/BookingEdit';
 
 
@@ -51,8 +53,7 @@ const [isModal,setIsModal]=useState(false)
 const allRoutes = [
   "/", "/rooms", "/payment", "/preorder", "/order-success", "/favourites", 
   "/myAccount", "/invoice", "/prepayment", "/prepaymentsuccess", "/listing",
-  "/userDashboard", "/userDashboard/manage", "/userDashboard/bookings", 
-  "/userDashboard/revenue", "/userDashboard/contact-admin"
+  "/userDashboard", "/userDashboard/manage", "/userDashboard/bookings", "/userDashboard/requestPayout","/userDashboard/requestedAdmin"
 ];
 
 const isKnownRoute = allRoutes.some(path => location.pathname === path) || 
@@ -77,8 +78,9 @@ const showFooter = !isAdminPath && isKnownRoute;
     <Route path="manage" element={<Management/>} />
     <Route path="bookings" element={<Bookings/>} />
     {/* <Route path="bookings/:id" element={<BookingEdit/>} /> */}
-    <Route path="revenue" element={<h2>this is revenue</h2>} />
-    <Route path="contact-admin" element={<h2>this is contact-admin</h2>} />
+    {/* <Route path="revenue" element={<h2>this is revenue</h2>} /> */}
+    <Route path="requestPayout" element={<RequestPayout/>} />
+    <Route path="requestedAdmin" element={<ContactAdmin/>} />
     </Route>
     <Route path="/prepayment" element={<PrePaymentPage/>}/>
     <Route path="/listing" element={<Listing/>}/>

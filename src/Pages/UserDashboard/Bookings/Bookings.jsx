@@ -11,6 +11,7 @@ const Bookings = () => {
     
     const { data: allOrder, isLoading: isOrdersLoading } = useGetAllOrdersDataQuery();
     const { data: totalRooms = [], isLoading: isRoomsLoading } = useGetSeperateOrderWithEmailQuery(userEmail);
+    
     const [updatePayment, { isLoading: isUpdating }] = useUpdateOrderPaymentMutation();
     
     const [editId, setEditId] = useState(null);

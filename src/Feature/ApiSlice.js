@@ -1,11 +1,11 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { collection, addDoc, getDocs, query, where, updateDoc, doc, deleteDoc } from "firebase/firestore"; 
+import { collection, addDoc, getDocs, query, where, updateDoc, doc, deleteDoc, getDoc, onSnapshot } from "firebase/firestore"; 
 import { db } from "../Firebase/Firebase";
 
 export const ApiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fakeBaseQuery(),
-  tagTypes: ['rooms', 'orders', 'users'],
+  tagTypes: ['rooms', 'orders', 'users','payment'],
   endpoints: (builder) => ({
     
     getAllRooms: builder.query({
@@ -175,7 +175,20 @@ export const ApiSlice = createApi({
    }
       },
       invalidatesTags:['orders']
-    })
+    }),
+    addUserPaymentRequest: builder.mutation({
+      async queryFn(paymentInfo) {
+        try {
+          const docRef = collection(db, 'payments');
+          await addDoc(docRef, paymentInfo);
+          return { data: 'ok' };
+        } catch (error) {
+          return { error: { message: error.message } };
+        }
+      },
+      invalidatesTags: ['payment'] 
+    }),
+    
   })
 });
 
@@ -190,5 +203,6 @@ export const {
   useDeleteSeperateRoomMutation,
   useAddRoomMutation,
   useUpdateRoomMutation,
-  useUpdateOrderPaymentMutation
+  useUpdateOrderPaymentMutation,
+  useAddUserPaymentRequestMutation,
 } = ApiSlice;
