@@ -39,7 +39,9 @@ import totalBookingIcon from "./totalBookingIcon.svg";
 import totalRevenueIcon from "./totalRevenueIcon.svg";
 import googleImg from './google.png';
 import emailImg from './email.png'
+import adminLogo from './adminLogo.png'
 export const assets = {
+    adminLogo,
     emailImg,
     roomImg1,
     roomImg3,

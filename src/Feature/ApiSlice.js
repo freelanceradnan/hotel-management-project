@@ -188,7 +188,42 @@ export const ApiSlice = createApi({
       },
       invalidatesTags: ['payment'] 
     }),
-    
+    successAllPayments: builder.query({
+      async queryFn() {
+        try {
+          const q=query(collection(db,'orders'),where("isPayment","==",true))
+          const docSnap=await getDocs(q)
+          
+        
+          return {
+            data: docSnap.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data()
+            }))
+          };
+        } catch (error) {
+          return { error: { message: "failed to return user data" } };
+        }
+      },
+      providesTags: ['orders'] 
+    }),
+      getAllRooms: builder.query({
+      async queryFn() {
+        try {
+          const docRef = collection(db, 'rooms');
+          const docSnap = await getDocs(docRef);
+          return {
+            data: docSnap.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data()
+            }))
+          };
+        } catch (error) {
+          return { error: { message: "failed to return user data" } };
+        }
+      },
+      providesTags: ['orders'] 
+    }),
   })
 });
 
@@ -205,4 +240,5 @@ export const {
   useUpdateRoomMutation,
   useUpdateOrderPaymentMutation,
   useAddUserPaymentRequestMutation,
+  useSuccessAllPaymentsQuery,
 } = ApiSlice;

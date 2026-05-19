@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { assets } from '../../assets/assets';
 import { X } from 'lucide-react';
 import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect } from 'firebase/auth';
@@ -8,7 +8,15 @@ import { GoogleAuthProvider } from "firebase/auth";
 import { toast } from 'react-toastify';
 // import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router';
+import { StoreContext } from '../../Contexts/StoreContext';
 const SignupModal = ({setIsModal}) => {
+   const { role, loading } = useContext(StoreContext);
+
+    if (loading) {
+        return <div>লোড হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।</div>;
+    }
+
+    console.log(role); 
   const navigate=useNavigate()
   const [loginData,setLoginData]=useState({
     email:"",
@@ -19,6 +27,8 @@ const SignupModal = ({setIsModal}) => {
   
   //signup states
   const [currentPage,setCurrentPage]=useState("login")
+ 
+  
  const [checked,setChecked]=useState(false)
    const [signupLoading,setSignUpLoading]=useState(false)
   const [singupData,setSignupData]=useState({
@@ -133,6 +143,7 @@ const SignupModal = ({setIsModal}) => {
   toast.success('Login Success!', {
               style: { backgroundColor: '#ff8c00', color: '#ffffff' },
             });
+ 
   setIsModal(false)
    } catch (error) {
     setLoginData({

@@ -38,6 +38,9 @@ import EditPage from './Pages/UserDashboard/EditPage/EditPage';
 import Bookings from './Pages/UserDashboard/Bookings/Bookings';
 import RequestPayout from './Pages/UserDashboard/RequestPayout/RequestPayout';
 import ContactAdmin from './Pages/UserDashboard/ContactAdmin/ContactAdmin';
+// import AdminDashboard from './Pages/AdminDashboard/AdminDashboard';
+import AdminNav from './Pages/AdminDashboard/AdminNav/AdminNav';
+import AdminStatistics from './Pages/AdminDashboard/AdminStatistics/AdminStatistics';
 // import BookingEdit from './Pages/UserDashboard/BookingEdit/BookingEdit';
 
 
@@ -71,6 +74,15 @@ const showFooter = !isAdminPath && isKnownRoute;
     {/* all-routes */}
     <Routes>
     <Route path="/" element={<Home/>} />
+    <Route path="/admin-dashboard" element={<AdminNav/>}>
+    <Route path="" element={<AdminStatistics/>}/>
+    <Route path="roomManagement" element={<h2>this is roomManagement</h2>}/>
+    <Route path="orderManagement" element={<h2>this is orderManagement</h2>}/>
+    <Route path="paymentManagement" element={<h2>this is paymentManagement</h2>}/>
+    <Route path="userManagement" element={<h2>this is userManagement</h2>}/>
+    <Route path="settings" element={<h2>this is settings</h2>}/>
+    
+    </Route>
     <Route path="/rooms" element={<Rooms/>}/>
     <Route path="/invoice" element={<InvoicePage/>}/>
     <Route path="/userDashboard" element={<UserDashboard/>}>

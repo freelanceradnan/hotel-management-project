@@ -11,8 +11,14 @@ import { doc, getDoc, onSnapshot } from "firebase/firestore";
 // import { Link } from "react-router";
 const Navbar = ({setIsModal,isModal}) => {
   const{data}=useGetUserDataQuery()
+  const navigate=useNavigate()
   const [isListing,setIsListing]=useState(null)
   const {currentUser,role,isLogin,loading}=useContext(StoreContext)
+  useEffect(() => {
+  if (!loading && role === 'admin') {
+    navigate('/admin-dashboard');
+  }
+}, [role, loading, navigate]);
   // console.log(isListing)
   // useEffect(()=>{
   //  if(currentUser&& data){
@@ -41,7 +47,7 @@ useEffect(() => {
   return () => unsubscribe();
 }, []);
 
-  const navigate=useNavigate()
+  
     const navLinks = [
         { name: 'Home', path: '/' },
         { name: 'Hotels', path: '/rooms' },
