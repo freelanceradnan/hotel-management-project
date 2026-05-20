@@ -1,13 +1,18 @@
 import React, { useContext, useState } from "react";
-import { uploadToCloudinary } from "../../utils/cloudinary";
+
 import { toast } from "react-toastify";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
-import { StoreContext } from "../../Contexts/StoreContext";
-import { db } from "../../Firebase/Firebase";
-import { useNavigate } from "react-router";
-import { useAddRoomMutation } from "../../Feature/ApiSlice";
 
-const Listing = ({owner:roomOwner}) => {
+
+import { useNavigate } from "react-router";
+
+import { uploadToCloudinary } from "../../../utils/cloudinary";
+import { StoreContext } from "../../../Contexts/StoreContext";
+import { useAddRoomMutation } from "../../../Feature/ApiSlice";
+import { db } from "../../../Firebase/Firebase";
+
+
+const AdminListing = () => {
   
   const { currentUser } = useContext(StoreContext);
   const navigate = useNavigate();
@@ -72,7 +77,7 @@ const Listing = ({owner:roomOwner}) => {
       // const docRef=collection(db,'rooms')
       const currentRoomData = {
         ...listingData,
-        owner: roomOwner,
+        owner: "Admin",
       };
       addRoom(currentRoomData).unwrap();
       // await addDoc(docRef,{
@@ -84,20 +89,20 @@ const Listing = ({owner:roomOwner}) => {
         isListing: true,
       });
       toast.success("room added!");
-      navigate("/rooms");
+      navigate("/admin-dashboard/roomManagement");
     } catch (error) {
       console.log("error is", error.message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-28 px-4 md:px-10 lg:px-24">
+    <div className="min-h-screen bg-gray-50 pt-2 px-4 md:px-0 lg:px-0">
       <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-3xl overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-white">
-          <h1 className="text-4xl font-bold">List Your Hotel Room</h1>
+          <h1 className="text-4xl font-bold">List Hotel Room</h1>
           <p className="mt-2 text-blue-100">
-            Add your room details correctly to attract more guests.
+            Add Hotel Room From Admin To Attract More customers.
           </p>
         </div>
 
@@ -293,4 +298,4 @@ const Listing = ({owner:roomOwner}) => {
   );
 };
 
-export default Listing;
+export default AdminListing;

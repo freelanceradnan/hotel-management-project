@@ -132,19 +132,19 @@ const AdminStatistics = () => {
             <p className="text-xs text-gray-500">Gross metrics calculated per channel</p>
           </div>
           
-          <div style={{ width: '100%', height: '260px', position: 'relative' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data}>
-                <Tooltip cursor={{ fill: '#F3F4F6', opacity: 0.5 }} />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                  {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
+        <div style={{ width: '100%', position: 'relative' }}>
+  {/* Pass the height directly as a number to Recharts */}
+  <ResponsiveContainer width="100%" height={260}>
+    <BarChart data={data}>
+      <Tooltip cursor={{ fill: '#F3F4F6', opacity: 0.5 }} />
+      <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+        {data.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+        ))}
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
+</div>
           {/* Dynamic Color-Matched Bottom Labels instead of static text blocks */}
           <div className='flex flex-wrap gap-3 justify-center mt-4 pt-2 border-t border-gray-50'>
             {data.map((item, idx) => (
@@ -164,44 +164,53 @@ const AdminStatistics = () => {
           </div>
 
           <div style={{ width: '100%', height: '312px', position: 'relative' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Tooltip 
-                  formatter={(value) => [`${value} units`, 'Total Volume']}
-                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E5E7EB' }}
-                />
-                
-                <Pie
-                  data={piedata} 
-                  cx="50%"
-                  cy="45%"
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius="75%"
-                  innerRadius="0%"
-                  isAnimationActive={true}
-                  // Dynamic label processing running safety checks on calculated blocks
-                //   label={({ name, value }) => {
-                //     const percentage = ((value / totalValue) * 100).toFixed(1);
-                //     return `${name}: ${percentage}%`;
-                //   }}
-                  labelLine={{ stroke: '#9CA3AF', strokeWidth: 1 }}
-                >
-                  {piedata.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                
-                <Legend 
-                  verticalAlign="bottom" 
-                  height={36}
-                  iconType="circle"
-                  iconSize={10}
-                  wrapperStyle={{ fontSize: '13px', paddingTop: '12px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+  {/* Added minWidth={0} here too just to prevent that previous width/height error */}
+    <ResponsiveContainer width="100%" height={260}>
+    <PieChart>
+      <Tooltip 
+        formatter={(value) => [`${value} units`, 'Total Volume']}
+        contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E5E7EB' }}
+      />
+      
+      <Pie
+        data={piedata} 
+        cx="50%"
+        cy="45%"
+        dataKey="value"
+        nameKey="name"
+        outerRadius="75%"
+        innerRadius="0%"
+        isAnimationActive={true}
+        
+      
+        label={({ name, value }) => {
+        
+          const total = piedata?.reduce((sum, entry) => sum + (entry.value || 0), 0) || 0;
+          
+        
+          if (total === 0) return `${name}: 0%`;
+          
+          const percentage = ((value / total) * 100).toFixed(1);
+          return `${name}: ${percentage}%`;
+        }}
+        
+        labelLine={{ stroke: '#9CA3AF', strokeWidth: 1 }}
+      >
+        {piedata.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+        ))}
+      </Pie>
+      
+      <Legend 
+        verticalAlign="bottom" 
+        height={36}
+        iconType="circle"
+        iconSize={10}
+        wrapperStyle={{ fontSize: '13px', paddingTop: '12px' }}
+      />
+    </PieChart>
+  </ResponsiveContainer>
+</div>
         </div>
 
       </div>

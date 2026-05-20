@@ -222,7 +222,7 @@ export const ApiSlice = createApi({
           return { error: { message: "failed to return user data" } };
         }
       },
-      providesTags: ['orders'] 
+      providesTags: ['rooms'] 
     }),
   })
 });

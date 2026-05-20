@@ -42,6 +42,10 @@ import ContactAdmin from './Pages/UserDashboard/ContactAdmin/ContactAdmin';
 import AdminNav from './Pages/AdminDashboard/AdminNav/AdminNav';
 import AdminStatistics from './Pages/AdminDashboard/AdminStatistics/AdminStatistics';
 // import BookingEdit from './Pages/UserDashboard/BookingEdit/BookingEdit';
+import RoomManagement from './Pages/AdminDashboard/RoomManagement/RoomManagement';
+import ListingPage from './Pages/Listing/ListingPage';
+import AdminListing from './Pages/AdminDashboard/AdminListing/AdminListing';
+import EditRoom from './Pages/AdminDashboard/EditRoom/EditRoom';
 
 
 
@@ -76,12 +80,14 @@ const showFooter = !isAdminPath && isKnownRoute;
     <Route path="/" element={<Home/>} />
     <Route path="/admin-dashboard" element={<AdminNav/>}>
     <Route path="" element={<AdminStatistics/>}/>
-    <Route path="roomManagement" element={<h2>this is roomManagement</h2>}/>
+    <Route path="roomManagement" element={<RoomManagement/>}/>
+    <Route path="adminListing" element={<AdminListing/>}/>
+    <Route path="roomManagement/edit/:id" element={<EditRoom/>}/>
     <Route path="orderManagement" element={<h2>this is orderManagement</h2>}/>
     <Route path="paymentManagement" element={<h2>this is paymentManagement</h2>}/>
     <Route path="userManagement" element={<h2>this is userManagement</h2>}/>
     <Route path="settings" element={<h2>this is settings</h2>}/>
-    
+     
     </Route>
     <Route path="/rooms" element={<Rooms/>}/>
     <Route path="/invoice" element={<InvoicePage/>}/>
@@ -95,7 +101,8 @@ const showFooter = !isAdminPath && isKnownRoute;
     <Route path="requestedAdmin" element={<ContactAdmin/>} />
     </Route>
     <Route path="/prepayment" element={<PrePaymentPage/>}/>
-    <Route path="/listing" element={<Listing/>}/>
+    <Route path="/listing" element={<ListingPage/>}/>
+   
     {/* <Route path="/check" element={<Check/>}/> */}
     <Route path="/prepaymentsuccess" element={<PrePaymentSuccess/>}/>
     <Route path="/rooms" element={<Rooms/>}/>

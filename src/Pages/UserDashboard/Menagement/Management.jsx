@@ -41,7 +41,7 @@ const Management = () => {
                        
                     </div>
                     <div>
-                        <Link to="/listing">
+                        <Link to="/listing" state={{owner:email}}>
                             <button className='bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-1.5' type='button'>
                                 <span className="text-sm">+</span> Add New Room
                             </button>
