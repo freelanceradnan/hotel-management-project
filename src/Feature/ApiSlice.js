@@ -207,6 +207,25 @@ export const ApiSlice = createApi({
       },
       providesTags: ['orders'] 
     }),
+    UnpaidAllPayments: builder.query({
+      async queryFn() {
+        try {
+          const q=query(collection(db,'orders'),where("isPayment","==",false))
+          const docSnap=await getDocs(q)
+          
+        
+          return {
+            data: docSnap.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data()
+            }))
+          };
+        } catch (error) {
+          return { error: { message: "failed to return user data" } };
+        }
+      },
+      providesTags: ['orders'] 
+    }),
       getAllRooms: builder.query({
       async queryFn() {
         try {
@@ -224,6 +243,57 @@ export const ApiSlice = createApi({
       },
       providesTags: ['rooms'] 
     }),
+  changeOrderStatus: builder.mutation({
+  async queryFn({ value, id }) {
+    try {
+      console.log("Updating order:", id, "with value:", value);
+      const docRef = doc(db, 'orders', id);
+      
+      const isPaymentString = String(value) === "true" ? true : false;
+      const statusString = isPaymentString === "true" ? "Paid" : "Unpaid";
+      
+      
+      await updateDoc(docRef, { 
+        isPayment: isPaymentString,
+        status: statusString
+      });
+      
+      return { data: true };
+    } catch (error) {
+      return { 
+        error: { 
+          status: 'CUSTOM_ERROR', 
+          error: error instanceof Error ? error.message : 'Unknown error' 
+        } 
+      };
+    }
+  },
+  invalidatesTags: ['orders']
+})
+,
+deleteSeperateOrder: builder.mutation({
+  async queryFn(id) {
+    console.log(id)
+    try {
+      
+      const docRef = doc(db, 'orders', id);
+
+      
+      await deleteDoc(docRef,id);
+      
+      return { data: true };
+    } catch (error) {
+      return { 
+        error: { 
+          status: 'CUSTOM_ERROR', 
+          error: error instanceof Error ? error.message : 'Unknown error' 
+        } 
+      };
+    }
+  },
+  invalidatesTags: ['orders']
+}),
+
   })
 });
 
@@ -241,4 +311,7 @@ export const {
   useUpdateOrderPaymentMutation,
   useAddUserPaymentRequestMutation,
   useSuccessAllPaymentsQuery,
+  useUnpaidAllPaymentsQuery,
+  useChangeOrderStatusMutation,
+  useDeleteSeperateOrderMutation
 } = ApiSlice;
