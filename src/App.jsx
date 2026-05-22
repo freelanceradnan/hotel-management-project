@@ -48,6 +48,7 @@ import AdminListing from './Pages/AdminDashboard/AdminListing/AdminListing';
 import EditRoom from './Pages/AdminDashboard/EditRoom/EditRoom';
 import OrderManagement from './Pages/AdminDashboard/OrderManagement/OrderManagement';
 import AdminPayment from './Pages/AdminDashboard/AdminPaymentManagement/AdminPayment';
+import UserManagement from './Pages/AdminDashboard/UserManagement/UserManagement';
 
 
 
@@ -87,7 +88,7 @@ const showFooter = !isAdminPath && isKnownRoute;
     <Route path="roomManagement/edit/:id" element={<EditRoom/>}/>
     <Route path="orderManagement" element={<OrderManagement/>}/>
     <Route path="paymentManagement" element={<AdminPayment/>}/>
-    <Route path="userManagement" element={<h2>this is userManagement</h2>}/>
+    <Route path="userManagement" element={<UserManagement/>}/>
     <Route path="settings" element={<h2>this is settings</h2>}/>
      
     </Route>

@@ -328,6 +328,22 @@ makePendingPayment: builder.mutation({
     }
   },
   invalidatesTags: ['payment']
+}),
+updateUserAndRole: builder.mutation({
+  async queryFn({ id, role, isActive }) {
+   
+    try {
+      if (!id) throw new Error("Missing document ID");
+      
+      const docRef = doc(db, 'users', id);
+      await updateDoc(docRef, { role, isActive });
+      
+      return { data: "Success" };
+    } catch (err) {
+      return { error: { message: err.message } };
+    }
+  },
+  invalidatesTags:['users']
 })
   })
 });
@@ -350,5 +366,6 @@ export const {
   useChangeOrderStatusMutation,
   useDeleteSeperateOrderMutation,
   useGetPaymentRequestQuery,
-  useMakePendingPaymentMutation
+  useMakePendingPaymentMutation,
+  useUpdateUserAndRoleMutation
 } = ApiSlice;
