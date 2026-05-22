@@ -273,7 +273,7 @@ export const ApiSlice = createApi({
 ,
 deleteSeperateOrder: builder.mutation({
   async queryFn(id) {
-    console.log(id)
+    // console.log(id)
     try {
       
       const docRef = doc(db, 'orders', id);
@@ -293,7 +293,42 @@ deleteSeperateOrder: builder.mutation({
   },
   invalidatesTags: ['orders']
 }),
+// feature/ApiSlice.js
+getPaymentRequest: builder.query({
+  async queryFn() {
+    try {
+      const docRef = collection(db, 'payments');
+      const result = await getDocs(docRef);
+      const paymentData = result.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      return { data: paymentData };
+    } catch (error) {
+      console.error(error.message);
+      
+      return { error: error.message || 'Failed to fetch payments' };
+    }
+  },
+  providesTags: ['payment']
+}),
 
+makePendingPayment: builder.mutation({
+  async queryFn(id) {
+    try {
+      const docRef = doc(db, 'payments', id);
+      await updateDoc(docRef, {
+        status: "Paid"
+      });
+     
+      return { data: { id, status: "Paid" } };
+    } catch (error) {
+      console.error(error.message);
+      return { error: error.message || 'Failed to update status' };
+    }
+  },
+  invalidatesTags: ['payment']
+})
   })
 });
 
@@ -313,5 +348,7 @@ export const {
   useSuccessAllPaymentsQuery,
   useUnpaidAllPaymentsQuery,
   useChangeOrderStatusMutation,
-  useDeleteSeperateOrderMutation
+  useDeleteSeperateOrderMutation,
+  useGetPaymentRequestQuery,
+  useMakePendingPaymentMutation
 } = ApiSlice;
