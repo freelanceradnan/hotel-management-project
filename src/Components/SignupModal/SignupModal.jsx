@@ -1,505 +1,428 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { assets } from '../../assets/assets';
 import { X } from 'lucide-react';
-import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect } from 'firebase/auth';
-import { auth, db} from '../../Firebase/Firebase';
-import { doc,getDoc,setDoc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { auth, db } from '../../Firebase/Firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { GoogleAuthProvider } from "firebase/auth";
 import { toast } from 'react-toastify';
-// import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router';
 import { StoreContext } from '../../Contexts/StoreContext';
-const SignupModal = ({setIsModal}) => {
-   const { role, loading } = useContext(StoreContext);
+import { useLazyCheckUserAuthenticatedQuery } from '../../Feature/ApiSlice';
 
-    if (loading) {
-        return <div>লোড হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।</div>;
-    }
-
-    console.log(role); 
-  const navigate=useNavigate()
-  const [loginData,setLoginData]=useState({
-    email:"",
-    password:""
-  })
+const SignupModal = ({ setIsModal }) => {
+  
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: ""
+  });
+  
+  const [checkauth, { data }] = useLazyCheckUserAuthenticatedQuery();
+  const { role, loading } = useContext(StoreContext);
+  const navigate = useNavigate();
   const provider = new GoogleAuthProvider();
-  const [remembered,setRembered]=useState(false)
   
-  //signup states
-  const [currentPage,setCurrentPage]=useState("login")
- 
+  const [remembered, setRembered] = useState(false);
+  const [currentPage, setCurrentPage] = useState("login");
+  const [checked, setChecked] = useState(false);
+  const [signupLoading, setSignUpLoading] = useState(false);
+  const [singupData, setSignupData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
+
   
- const [checked,setChecked]=useState(false)
-   const [signupLoading,setSignUpLoading]=useState(false)
-  const [singupData,setSignupData]=useState({
-    name:"",
-    email:"",
-    password:""
-  })
- 
-  const ChangeSignHandler=(e)=>{
-    setSignupData({...singupData,[e.target.name]:e.target.value})
-  }
-  
-  const signupSubmitHandler=async(e)=>{
-  e.preventDefault()
-  setSignUpLoading(true)
-  try {
-   await createUserWithEmailAndPassword(auth,singupData.email,singupData.password)
-   
-   if(auth.currentUser){
-    await setDoc(doc(db,'users',auth.currentUser.uid),{
-      email:singupData.email,
-      role:"user",
-      isOrderNotify: true,
-      createdAt: new Date().toISOString()
-    })
-    setIsModal(false)
-    toast.success('Signup Success!', {
-              style: { backgroundColor: '#ff8c00', color: '#ffffff' },
-            });
-     setSignupData({
-     name:"",
-    email:"",
-    password:""
-     })
-     setSignUpLoading(false)
-   }
-  
-  } catch (error) {
-    const errorCode = error.code;
-    let message=""
-    switch (errorCode) {
-      case 'auth/email-already-in-use':
-        message="This email is already registered. Try logging in instead.";
-        break;
-      case 'auth/weak-password':
-        message="Your password is too weak. Please use at least 6 characters.";
-        break;
-      case 'auth/invalid-email':
-        message="That email address doesn't look right.";
-        break;
-      default:
-        
-        message="An unexpected error occurred. Please try again.";
-        
-    }
-   setSignupData({
-    name:"",
-    email:"",
-    password:""
-   })
-    toast.error(message,{
-  style: {
-    backgroundColor: '#ff8c00', 
-    color: '#ffffff'          
-  },
-  progressStyle: {
-    background: '#ffffff'     
-     }})
-     
-    setSignUpLoading(false)
-  
-  }
-   
-  }
-  //remeberme
-  useEffect(()=>{
-  const savedRemember=localStorage.getItem('rememberedEmail')
-  if(savedRemember){
-  setLoginData({...loginData,email:savedRemember})
-  setChecked(true)
-  }
-  else{
-    setLoginData({...loginData,email:""})
-    setChecked(false)
-  }
-  },[])
-  
-  //login states
-  const [loginLoading,setLoginLoading]=useState(false)
- 
-  const [loginError,setLoginError]=useState("")
-  
-  const changeLoginHandler=(e)=>{
-    setLoginData({...loginData,[e.target.name]:e.target.value})
-  }
-  
-   const loginSubmitHandler=async(e)=>{
-  e.preventDefault()
-  setLoginLoading(true)
-  setLoginError("")
-  try {
-  await signInWithEmailAndPassword(auth,loginData.email,loginData.password)
-  if (remembered) {
-      localStorage.setItem("rememberedEmail", loginData.email);
+  useEffect(() => {
+    const savedRemember = localStorage.getItem('rememberedEmail');
+    if (savedRemember) {
+      setLoginData(prev => ({ ...prev, email: savedRemember }));
+      setChecked(true);
     } else {
-      localStorage.removeItem("rememberedEmail");
+      setLoginData(prev => ({ ...prev, email: "" }));
+      setChecked(false);
     }
-   setIsModal(false);
-  navigate("/")
-  setLoginLoading(false)
-  setLoginError("")
-  toast.success('Login Success!', {
-              style: { backgroundColor: '#ff8c00', color: '#ffffff' },
-            });
- 
-  setIsModal(false)
-   } catch (error) {
-    setLoginData({
-      email:"",
-      password:""
-    })
-    let message=""
-    switch (error.code) {
-      case 'auth/user-not-found':
-        message="No user found this email!";
-        break;
-      case 'auth/wrong-password':
-        message="Wrong Password!";
-        break;
-      case 'auth/invalid-email':
-        message="Wrong Email Address!";
-        break;
-      case 'auth/too-many-requests':
-        message="Too many Attemp please try again later";
-        break;
-      default:
-        message="An error occured!";
-        break;
-    }
-    setLoginLoading(false)
-    
-    toast.error(message, {
-              style: { backgroundColor: '#ff8c00', color: '#ffffff' },
-            });
-    
-  }
-  
-  
-  }
-const singInWithGoogle = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user; 
+  }, []);
 
-    if (user) {
-      const userRef = doc(db, 'users', user.uid);
-      const userSnap = await getDoc(userRef);
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur">
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-slate-100 font-semibold text-slate-700">
+         Loading please wait
+        </div>
+      </div>
+    );
+  }
 
-      if (!userSnap.exists()) {
-       
-        await setDoc(userRef, {
-          email: user.email,
+//all handler and func
+  const ChangeSignHandler = (e) => {
+    setSignupData({ ...singupData, [e.target.name]: e.target.value });
+  };
+
+  const signupSubmitHandler = async (e) => {
+    e.preventDefault();
+    setSignUpLoading(true);
+    try {
+      await createUserWithEmailAndPassword(auth, singupData.email, singupData.password);
+
+      if (auth.currentUser) {
+        await setDoc(doc(db, 'users', auth.currentUser.uid), {
+          email: singupData.email,
           role: "user",
           isOrderNotify: true,
-          createdAt: new Date().toISOString() 
+          isActive: true,
+          createdAt: new Date().toISOString()
         });
-        console.log("New user created in Firestore!");
+        setIsModal(false);
+        toast.success('Signup Success!', {
+          style: { backgroundColor: '#ff8c00', color: '#ffffff' },
+        });
+        setSignupData({
+          name: "",
+          email: "",
+          password: ""
+        });
+        setSignUpLoading(false);
+      }
+    } catch (error) {
+      const errorCode = error.code;
+      let message = "";
+      switch (errorCode) {
+        case 'auth/email-already-in-use':
+          message = "This email is already registered. Try logging in instead.";
+          break;
+        case 'auth/weak-password':
+          message = "Your password is too weak. Please use at least 6 characters.";
+          break;
+        case 'auth/invalid-email':
+          message = "That email address doesn't look right.";
+          break;
+        default:
+          message = "An unexpected error occurred. Please try again.";
+      }
+      setSignupData({
+        name: "",
+        email: "",
+        password: ""
+      });
+      toast.error(message, {
+        style: { backgroundColor: '#ff8c00', color: '#ffffff' },
+        progressStyle: { background: '#ffffff' }
+      });
+      setSignUpLoading(false);
+    }
+  };
+
+  const changeLoginHandler = (e) => {
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  };
+
+  const loginSubmitHandler = async (e) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    setLoginError("");
+
+    try {
+      if (loginData.email) {
+        const res = await checkauth(loginData.email).unwrap();
+        if (res && res.length > 0) {
+          if (res[0].isActive === true) {
+            await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
+          } else {
+            setLoginLoading(false);
+            toast.error('Account disabled, please contact your Admin');
+            return;
+          }
+        } else {
+          setLoginLoading(false);
+          toast.error('User data not found in database!');
+          return;
+        }
       }
 
-      toast.success('Google Login Success!');
+      if (remembered) {
+        localStorage.setItem("rememberedEmail", loginData.email);
+      } else {
+        localStorage.removeItem("rememberedEmail");
+      }
+
       setIsModal(false);
+      navigate("/");
+      setLoginLoading(false);
+      setLoginError("");
+
+      toast.success('Login Success!', {
+        style: { backgroundColor: '#ff8c00', color: '#ffffff' },
+      });
+    } catch (error) {
+      setLoginData({
+        email: "",
+        password: ""
+      });
+
+      let message = "";
+      switch (error.code) {
+        case 'auth/user-not-found':
+          message = "No user found with this email!";
+          break;
+        case 'auth/wrong-password':
+          message = "Wrong Password!";
+          break;
+        case 'auth/invalid-email':
+          message = "Wrong Email Address!";
+          break;
+        case 'auth/too-many-requests':
+          message = "Too many attempts, please try again later";
+          break;
+        default:
+          message = error.message || "An error occurred!";
+          break;
+      }
+
+      setLoginLoading(false);
+      toast.error(message, {
+        style: { backgroundColor: '#ff8c00', color: '#ffffff' },
+      });
     }
-  } catch (error) {
-    console.error("Firestore Error:", error); 
-    toast.error(error.message);
-  }
-};
-//reset password states
-const [resetEmail,setResetEmail]=useState("")
-const [resetLoading,setResetLoading]=useState(false)
-const resetHandler=async()=>{
-  setResetLoading(true)
-try {
+  };
 
-  await sendPasswordResetEmail(auth,resetEmail)
-  setResetLoading(false)
-  setResetEmail("")
-  
-  toast.success('Reset Mail Sended!Check Your Email Spam Folder Must!', {
-              style: { backgroundColor: '#ff8c00', color: '#ffffff' },
-            });
-            setCurrentPage('login')
-  
-} catch (error) {
-  setResetLoading(false)
-  const errorCode=error.code
-  let message=""
+  const singInWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
 
-  switch(errorCode){
-    case 'auth/invalid-email':
-    message="Email Not Fount"
-    break;
-    case 'auth/network-request-failed':
-    message="Check your Internet Connection!"
-  }
-  toast.error(message, {
-              style: { backgroundColor: '#ff8c00', color: '#ffffff' },
-            });
-  setResetEmail("")
-}
-}
-return (
-        <div>
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur">
-  {/* Modal Container */}
-  <div className="flex items-center justify-center min-h-screen p-4 w-full lg:w-2/3 ">
-  
-  <div className="rounded-2xl shadow-2xl flex overflow-hidden border border-slate-100 w-full relative shadow-2xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.15)] h-[85vh]">
-    <button className="absolute top-2 right-3 transition-transform duration-500 active:rotate-[360deg] hover:scale-110" onClick={()=>setIsModal(false)}>
-  <X />
-</button>
-    {/*singup*/}
-    {currentPage=='signup' && 
-    <>
-    <div className="hidden md:block md:w-1/2 hidden">
-      <img 
-        className="w-full object-cover h-full" 
-        src={assets.regImage} 
-        alt="leftSideImage" 
-      />
-    </div>
+      if (user) {
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
 
-    {/* Right Side: Form */}
-    <div className="flex flex-col items-center justify-center w-full md:w-1/2 p-8 md:p-12 bg-slate-50 ">
-      <form className="flex flex-col w-full gap-2" onSubmit={signupSubmitHandler}>
-        
-        {/* Header */}
-        <div className="text-center mb-1">
-          <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Sign Up</h2>
-          <p className="text-sm text-slate-500 mt-1">Please enter your details to create An Account!</p>
-        </div>
+        if (!userSnap.exists()) {
+          await setDoc(userRef, {
+            email: user.email,
+            role: "user",
+            isOrderNotify: true,
+            isActive: true,
+            createdAt: new Date().toISOString()
+          });
+          console.log("New user created in Firestore!");
+        }
 
-        {/* Google Button */}
-        <button type="button" className="w-full border border-slate-200 hover:bg-slate-50 flex items-center justify-center h-11 rounded-xl transition-all gap-3 text-blue-600 font-extralight" onClick={singInWithGoogle}>
-          <img className="h-6" src={assets.googleImg} alt="google" />
-          Sign in with Google
-        </button>
-
-        {/* Divider */}
-        <div className="flex items-center gap-2">
-          <div className="h-px bg-slate-200 flex-1"></div>
-          <span className="text-xs text-slate-400 uppercase font-semibold">or</span>
-          <div className="h-px bg-slate-200 flex-1"></div>
-        </div>
-
-        {/* Inputs Group */}
-        <div className="space-y-4">
-          <div className="relative flex items-center">
-             <span className="absolute left-4 text-slate-400">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-  <circle cx="12" cy="7" r="4"></circle>
-</svg>
-             </span>
-             <input type="text" placeholder="First Name" className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all" name="name" onChange={ChangeSignHandler} value={singupData.name} required/>
-          </div>
-          <div className="relative flex items-center">
-             <span className="absolute left-4 text-slate-400">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-             </span>
-             <input type="email" placeholder="Email address" className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all"  name="email" onChange={ChangeSignHandler} value={singupData.email} required />
-          </div>
-
-          <div className="relative flex items-center">
-             <span className="absolute left-4 text-slate-400">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-             </span>
-             <input type="password" placeholder="Password" className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all"  name="password" onChange={ChangeSignHandler} value={singupData.password} required />
-          </div>
-        </div>
-
-        {/* Options */}
-        <div className="flex items-center justify-between">
-          {/* Terms & Conditions */}
-  <div className="flex items-start gap-2 text-sm text-gray-500">
-    <input 
-      type="checkbox" 
-      id="terms"
-      
-      className="mt-1 accent-tomato cursor-pointer" 
-      required
-    />
-    <label htmlFor="terms" className="leading-tight cursor-pointer font-semibold">
-      By continuing, I agree to the <span className="text-blue-500 font-medium hover:underline">Terms of Service</span> and <span className="text-blue-500 font-medium hover:underline">Privacy Policy</span>.
-    </label>
-  </div>
-         
-        </div>
-
-        {/* Submit */}
-   
-       {signupLoading? <h2 className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center">
-        Creating user...
-       </h2>:
-        <button type="submit" className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98]">
-          Register now
-        </button>
-       }
-       
-
-        <p className="text-center text-slate-500 text-sm mt-2">
-          Don’t have an account? <button type="button" className="text-indigo-600 font-bold hover:underline" onClick={()=>setCurrentPage('login')}>
-            Login
-          </button>
-        </p>
-      </form>
-    </div>
-    </>
+        toast.success('Google Login Success!');
+        setIsModal(false);
+      }
+    } catch (error) {
+      console.error("Firestore Error:", error);
+      toast.error(error.message);
     }
-      {/*login*/}
-    {currentPage=='login' && (
-      <>
-    <div className="hidden md:block md:w-1/2 hidden">
-      <img 
-        className="w-full object-cover h-full" 
-        src={assets.roomImg1} 
-        alt="leftSideImage" 
-      />
-    </div>
+  };
 
-    {/* Right Side: Form */}
-    <div className="flex flex-col items-center justify-center w-full md:w-1/2 p-8 md:p-12 bg-slate-50 ">
-      <form className="flex flex-col w-full gap-2" onSubmit={loginSubmitHandler}>
-        
-        {/* Header */}
-        <div className="text-center mb-1">
-          <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Login</h2>
-          <p className="text-sm text-slate-500 mt-1">Please enter your details to login Account!</p>
-        </div>
+  const resetHandler = async (e) => {
+    if (e) e.preventDefault();
+    setResetLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      setResetLoading(false);
+      setResetEmail("");
 
-        {/* Google Button */}
-        <button type="button" className="w-full border border-slate-200 hover:bg-slate-50 flex items-center justify-center h-11 rounded-xl transition-all gap-3 font-medium  text-blue-600 font-extralight" onClick={singInWithGoogle}>
-           <img className="h-6 text-blue" src={assets.googleImg} alt="google" />
-          Login with Google
-        </button>
+      toast.success('Reset Mail Sent! Check Your Email Spam Folder!', {
+        style: { backgroundColor: '#ff8c00', color: '#ffffff' },
+      });
+      setCurrentPage('login');
+    } catch (error) {
+      setResetLoading(false);
+      const errorCode = error.code;
+      let message = "An error occurred!";
 
-        {/* Divider */}
-        <div className="flex items-center gap-2">
-          <div className="h-px bg-slate-200 flex-1"></div>
-          <span className="text-xs text-slate-400 uppercase font-semibold">or</span>
-          <div className="h-px bg-slate-200 flex-1"></div>
-        </div>
+      switch (errorCode) {
+        case 'auth/invalid-email':
+          message = "Email Not Found";
+          break;
+        case 'auth/network-request-failed':
+          message = "Check your Internet Connection!";
+          break;
+      }
+      toast.error(message, {
+        style: { backgroundColor: '#ff8c00', color: '#ffffff' },
+      });
+      setResetEmail("");
+    }
+  };
 
-        {/* Inputs Group */}
-        <div className="space-y-4">
-         
-          <div className="relative flex items-center">
-             <span className="absolute left-4 text-slate-400">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-             </span>
-             <input type="email" placeholder="Email address" className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all"  name="email" onChange={changeLoginHandler} value={loginData.email} required />
-          </div>
-
-          <div className="relative flex items-center">
-             <span className="absolute left-4 text-slate-400">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-             </span>
-             <input type="password" placeholder="Password" className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all"  name="password" onChange={changeLoginHandler} value={loginData.password} required />
-          </div>
-          {loginError && <h2>{loginError}</h2>}
-        </div>
-
-        {/* Options */}
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 cursor-pointer group">
-            <input className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" type="checkbox" id="checkbox" checked={remembered} onChange={(e)=>setRembered(e.target.checked)}/>
-            <span className="text-xs text-slate-600 group-hover:text-slate-800 transition-colors">Remember me</span>
-          </label>
-          <button className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition-colors" onClick={()=>setCurrentPage('resetPassword')} type='button'>Forgot password?</button>
-        </div>
-
-        {/* Submit */}
-        
-       {loginLoading? <h2 className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center">
-        Login user...
-       </h2>:
-        <button type="submit" className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98]">
-          Login now
-        </button>
-       }
-
-        <p className="text-center text-slate-500 text-sm mt-2">
-          Don’t have an account? <button  className="text-indigo-600 font-bold hover:underline" onClick={()=>setCurrentPage('signup')} type='button'>Sign up</button>
-        </p>
-      </form>
-    </div>
-    </>
-    )}
-      {/*reset*/}
-     {currentPage=='resetPassword' && (
-      <>
-    <div className="hidden md:block md:w-1/2 hidden">
-      <img 
-        className="w-full object-cover h-full" 
-        src={assets.regImage} 
-        alt="leftSideImage" 
-      />
-    </div>
-
-    {/* Right Side: Form */}
-    <div className="flex flex-col items-center justify-center w-full md:w-1/2 p-8 md:p-12 bg-slate-50 ">
-      <form className="flex flex-col w-full gap-2" onSubmit={resetHandler}>
-        
-        {/* Header */}
-        <div className="text-center mb-1">
-          <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Reset Your Password!</h2>
-          <p className="text-sm text-slate-500 mt-1">Please enter your email to get a reset Email!</p>
-        </div>
-
-      
-
-        {/* Divider */}
-        <div className="flex items-center gap-2">
-          <div className="h-px bg-slate-200 flex-1"></div>
-          <span className="text-xs text-slate-400 uppercase font-semibold">or</span>
-          <div className="h-px bg-slate-200 flex-1"></div>
-        </div>
-
-        {/* Inputs Group */}
-        <div className="space-y-4">
-          <div className="relative flex items-center">
-             <span className="absolute left-4 text-slate-400">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-             </span>
-             <input type="email" placeholder="Email address" value={resetEmail} className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all"  name="email" onChange={(e)=>setResetEmail(e.target.value)}  required />
-          </div>
-         
-        </div>
-
-        {/* Options */}
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 cursor-pointer group">
+  return (
+    <div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur">
+        <div className="flex items-center justify-center min-h-screen p-4 w-full lg:w-2/3 ">
+          <div className="rounded-2xl flex overflow-hidden border border-slate-100 w-full relative shadow-[0_20px_50px_rgba(8,_112,_184,_0.15)] h-[85vh]">
+            <button className="absolute top-2 right-3 z-10 transition-transform duration-500 active:rotate-[360deg] hover:scale-110" onClick={() => setIsModal(false)}>
+              <X />
+            </button>
             
-           
-          </label>
-         
+            {/* signup page layout */}
+            {currentPage === 'signup' && (
+              <>
+                <div className="hidden md:block md:w-1/2">
+                  <img className="w-full object-cover h-full" src={assets.regImage} alt="leftSideImage" />
+                </div>
+                <div className="flex flex-col items-center justify-center w-full md:w-1/2 p-8 md:p-12 bg-slate-50">
+                  <form className="flex flex-col w-full gap-2" onSubmit={signupSubmitHandler}>
+                    <div className="text-center mb-1">
+                      <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Sign Up</h2>
+                      <p className="text-sm text-slate-500 mt-1">Please enter your details to create An Account!</p>
+                    </div>
+                    <button type="button" className="w-full border border-slate-200 hover:bg-slate-50 flex items-center justify-center h-11 rounded-xl transition-all gap-3 text-blue-600 font-extralight" onClick={singInWithGoogle}>
+                      <img className="h-6" src={assets.googleImg} alt="google" />
+                      Sign in with Google
+                    </button>
+                    <div className="flex items-center gap-2">
+                      <div className="h-px bg-slate-200 flex-1"></div>
+                      <span className="text-xs text-slate-400 uppercase font-semibold">or</span>
+                      <div className="h-px bg-slate-200 flex-1"></div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="relative flex items-center">
+                        <span className="absolute left-4 text-slate-400">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                          </svg>
+                        </span>
+                        <input type="text" placeholder="First Name" className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all" name="name" onChange={ChangeSignHandler} value={singupData.name} required />
+                      </div>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-4 text-slate-400">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        </span>
+                        <input type="email" placeholder="Email address" className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all" name="email" onChange={ChangeSignHandler} value={singupData.email} required />
+                      </div>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-4 text-slate-400">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </span>
+                        <input type="password" placeholder="Password" className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all" name="password" onChange={ChangeSignHandler} value={singupData.password} required />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-start gap-2 text-sm text-gray-500">
+                        <input type="checkbox" id="terms" className="mt-1 accent-tomato cursor-pointer" required />
+                        <label htmlFor="terms" className="leading-tight cursor-pointer font-semibold">
+                          By continuing, I agree to the <span className="text-blue-500 font-medium hover:underline">Terms of Service</span> and <span className="text-blue-500 font-medium hover:underline">Privacy Policy</span>.
+                        </label>
+                      </div>
+                    </div>
+                    {signupLoading ? (
+                      <h2 className="w-full h-12 rounded-xl text-white bg-indigo-600 font-semibold shadow-lg shadow-indigo-200 flex items-center justify-center">Creating user...</h2>
+                    ) : (
+                      <button type="submit" className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98]">Register now</button>
+                    )}
+                    <p className="text-center text-slate-500 text-sm mt-2">
+                      Already have an account? <button type="button" className="text-indigo-600 font-bold hover:underline" onClick={() => setCurrentPage('login')}>Login</button>
+                    </p>
+                  </form>
+                </div>
+              </>
+            )}
+
+            {/* login page layout */}
+            {currentPage === 'login' && (
+              <>
+                <div className="hidden md:block md:w-1/2">
+                  <img className="w-full object-cover h-full" src={assets.roomImg1} alt="leftSideImage" />
+                </div>
+                <div className="flex flex-col items-center justify-center w-full md:w-1/2 p-8 md:p-12 bg-slate-50">
+                  <form className="flex flex-col w-full gap-2" onSubmit={loginSubmitHandler}>
+                    <div className="text-center mb-1">
+                      <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Login</h2>
+                      <p className="text-sm text-slate-500 mt-1">Please enter your details to login Account!</p>
+                    </div>
+                    <button type="button" className="w-full border border-slate-200 hover:bg-slate-50 flex items-center justify-center h-11 rounded-xl transition-all gap-3 font-medium text-blue-600 font-extralight" onClick={singInWithGoogle}>
+                      <img className="h-6 text-blue" src={assets.googleImg} alt="google" />
+                      Login with Google
+                    </button>
+                    <div className="flex items-center gap-2">
+                      <div className="h-px bg-slate-200 flex-1"></div>
+                      <span className="text-xs text-slate-400 uppercase font-semibold">or</span>
+                      <div className="h-px bg-slate-200 flex-1"></div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="relative flex items-center">
+                        <span className="absolute left-4 text-slate-400">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        </span>
+                        <input type="email" placeholder="Email address" className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all" name="email" onChange={changeLoginHandler} value={loginData.email} required />
+                      </div>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-4 text-slate-400">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </span>
+                        <input type="password" placeholder="Password" className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all" name="password" onChange={changeLoginHandler} value={loginData.password} required />
+                      </div>
+                      {loginError && <h2>{loginError}</h2>}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <label className="flex items-center gap-2 cursor-pointer group">
+                        <input className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" type="checkbox" id="checkbox" checked={remembered} onChange={(e) => setRembered(e.target.checked)} />
+                        <span className="text-xs text-slate-600 group-hover:text-slate-800 transition-colors">Remember me</span>
+                      </label>
+                      <button className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition-colors" onClick={() => setCurrentPage('resetPassword')} type='button'>Forgot password?</button>
+                    </div>
+                    {loginLoading ? (
+                      <h2 className="w-full h-12 rounded-xl text-white bg-indigo-600 font-semibold shadow-lg shadow-indigo-200 flex items-center justify-center">Login user...</h2>
+                    ) : (
+                      <button type="submit" className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98]">Login now</button>
+                    )}
+                    <p className="text-center text-slate-500 text-sm mt-2">
+                      Don’t have an account? <button className="text-indigo-600 font-bold hover:underline" onClick={() => setCurrentPage('signup')} type='button'>Sign up</button>
+                    </p>
+                  </form>
+                </div>
+              </>
+            )}
+
+            {/* reset password page layout */}
+            {currentPage === 'resetPassword' && (
+              <>
+                <div className="hidden md:block md:w-1/2">
+                  <img className="w-full object-cover h-full" src={assets.regImage} alt="leftSideImage" />
+                </div>
+                <div className="flex flex-col items-center justify-center w-full md:w-1/2 p-8 md:p-12 bg-slate-50">
+                  <form className="flex flex-col w-full gap-2" onSubmit={resetHandler}>
+                    <div className="text-center mb-1">
+                      <h2 className="text-3xl text-slate-800 font-bold tracking-tight">Reset Your Password!</h2>
+                      <p className="text-sm text-slate-500 mt-1">Please enter your email to get a reset Email!</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-px bg-slate-200 flex-1"></div>
+                      <span className="text-xs text-slate-400 uppercase font-semibold">or</span>
+                      <div className="h-px bg-slate-200 flex-1"></div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="relative flex items-center">
+                        <span className="absolute left-4 text-slate-400">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        </span>
+                        <input type="email" placeholder="Email address" value={resetEmail} className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none rounded-xl h-12 pl-12 pr-4 text-sm transition-all" name="email" onChange={(e) => setResetEmail(e.target.value)} required />
+                      </div>
+                    </div>
+                    {resetLoading ? (
+                      <h2 className="w-full h-12 rounded-xl text-white bg-indigo-600 font-semibold shadow-lg shadow-indigo-200 flex items-center justify-center">Sending Email...</h2>
+                    ) : (
+                      <button type="submit" className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98]">Reset Password</button>
+                    )}
+                    <p className="text-center text-slate-500 text-sm mt-2">
+                      Already have Password? <button type="button" className="text-indigo-600 font-bold hover:underline" onClick={() => setCurrentPage('login')}>Login</button>
+                    </p>
+                  </form>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-
-        {/* Submit */}
-       {resetLoading? <h2 className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center">
-        Sending Email...
-       </h2>:
-        <button type="submit" className="w-full h-12 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all active:scale-[0.98]" onClick={resetHandler}>
-          Reset Password
-        </button>
-       }
-
-        <p className="text-center text-slate-500 text-sm mt-2">
-          Already have Password? <button type="button" className="text-indigo-600 font-bold hover:underline" onClick={()=>setCurrentPage('login')}>
-            Login
-          </button>
-        </p>
-      </form>
+      </div>
     </div>
-    </>
-    )}
-  </div>
-</div>
-</div>
-        </div>
-    );
+  );
 }
 
 export default SignupModal;

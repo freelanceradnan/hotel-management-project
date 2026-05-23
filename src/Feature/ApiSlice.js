@@ -344,6 +344,33 @@ updateUserAndRole: builder.mutation({
     }
   },
   invalidatesTags:['users']
+}),
+checkUserAuthenticated: builder.query({
+  async queryFn(email) {
+    console.log("Checking email in Firestore:", email);
+    
+    try {
+    
+      const q = query(collection(db, 'users'), where('email', '==', email));
+      
+     
+      const querySnapshot = await getDocs(q); 
+      
+     
+      const filtered = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+     
+      return { data: filtered };
+      
+    } catch (error) {
+      console.error("Firestore Error:", error);
+     
+      return { error: error.message || error };
+    }
+  }
 })
   })
 });
@@ -367,5 +394,7 @@ export const {
   useDeleteSeperateOrderMutation,
   useGetPaymentRequestQuery,
   useMakePendingPaymentMutation,
-  useUpdateUserAndRoleMutation
+  useUpdateUserAndRoleMutation,
+  useCheckUserAuthenticatedQuery,
+  useLazyCheckUserAuthenticatedQuery
 } = ApiSlice;

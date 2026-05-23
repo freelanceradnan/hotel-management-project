@@ -89,7 +89,7 @@ const showFooter = !isAdminPath && isKnownRoute;
     <Route path="orderManagement" element={<OrderManagement/>}/>
     <Route path="paymentManagement" element={<AdminPayment/>}/>
     <Route path="userManagement" element={<UserManagement/>}/>
-    <Route path="settings" element={<h2>this is settings</h2>}/>
+    <Route path="settings" element={<h2>Settings Will Be Assign Soon...</h2>}/>
      
     </Route>
     <Route path="/rooms" element={<Rooms/>}/>
