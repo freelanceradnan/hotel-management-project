@@ -1,7 +1,10 @@
 import React, { useMemo, useState } from "react";
-import { useGetUserDataQuery, useUpdateOrderMutation, useUpdateUserAndRoleMutation } from "../../../Feature/ApiSlice";
-import { Check, DeleteIcon, Pencil, X } from "lucide-react";
+import { useDeleteUserDataMutation, useGetUserDataQuery, useUpdateOrderMutation, useUpdateUserAndRoleMutation } from "../../../Feature/ApiSlice";
+import { Check, DeleteIcon, Pencil, Trash, X } from "lucide-react";
 import { toast } from "react-toastify";
+import { deleteUser } from 'firebase/auth';
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "../../../Firebase/Firebase";
 
 const UserManagement = () => {
   const { data: TotalUserData, isLoading } = useGetUserDataQuery();
@@ -9,6 +12,7 @@ const UserManagement = () => {
   const [editRole, setEditRole] = useState("");
   const [editActive, setEditActive] = useState(true);
   const [updateUser] = useUpdateUserAndRoleMutation();
+  const [deleteUser]=useDeleteUserDataMutation()
 
   // Active users count (Fixed: used .filter instead of .map)
   const approveUser = useMemo(() => {
@@ -57,7 +61,15 @@ const submitUpdate = async (e,id) => {
   if (isLoading) {
     return <div className="p-6 text-center text-gray-500">Loading user records...</div>;
   }
-
+const deleteUserHandler = async (id) => {
+  try {
+    await deleteUser(id).unwrap();
+    toast.success('User Deleted Successfully!');
+  } catch (error) {
+    console.error("Handler Catch Error: ", error);
+    toast.error(error?.message || 'User deletion failed');
+  }
+};
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <h2 className="text-2xl font-bold uppercase tracking-wider text-gray-800">
@@ -187,8 +199,9 @@ const submitUpdate = async (e,id) => {
                               type="button"
                               className="text-red-400 hover:text-red-600 p-1 hover:bg-red-50 rounded transition-colors"
                               title="Delete user record"
+                              onClick={()=>deleteUserHandler(user.id)}
                             >
-                              <DeleteIcon className="h-4 w-4" />
+                              <Trash className="h-4 w-4" />
                             </button>
                           </>
                         )}

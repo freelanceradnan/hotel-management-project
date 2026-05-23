@@ -371,6 +371,19 @@ checkUserAuthenticated: builder.query({
       return { error: error.message || error };
     }
   }
+}),
+deleteUserData: builder.mutation({
+  async queryFn(id) {
+    try {
+      const docRef = doc(db, 'users', id);
+      await deleteDoc(docRef);
+      return { data: { success: true, id } }; 
+    } catch (error) {
+      console.error("Firebase Delete Error: ", error);
+      return { error: { message: error.message || 'Failed to delete user' } };
+    }
+  },
+  invalidatesTags: ['users']
 })
   })
 });
@@ -396,5 +409,6 @@ export const {
   useMakePendingPaymentMutation,
   useUpdateUserAndRoleMutation,
   useCheckUserAuthenticatedQuery,
-  useLazyCheckUserAuthenticatedQuery
+  useLazyCheckUserAuthenticatedQuery,
+  useDeleteUserDataMutation
 } = ApiSlice;
