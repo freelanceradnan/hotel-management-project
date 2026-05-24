@@ -5,6 +5,7 @@ import { StoreContext } from '../../../Contexts/StoreContext';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from '../../../Firebase/Firebase';
+import { Link } from 'react-router';
 
 const RequestPayout = () => {
     const { currentUser } = useContext(StoreContext);
@@ -12,6 +13,7 @@ const RequestPayout = () => {
     const { data: allOrder, isLoading: isOrdersLoading } = useGetAllOrdersDataQuery();
     const { data: totalRooms = [], isLoading: isRoomsLoading } = useGetSeperateOrderWithEmailQuery(userEmail);
     const [addPayRequest] = useAddUserPaymentRequestMutation();
+    const [payoutTrigger, setPayoutTrigger] = useState(false);
     const [payRequestStatus, setPayRequestStatus] = useState([]);
     const [payRequestStatusLoading, setPayRequestStatusLoading] = useState(false);
     
@@ -50,6 +52,8 @@ const RequestPayout = () => {
                 };
              
                 await addPayRequest(initValue).unwrap();
+                
+                setPayoutTrigger(true)
                 toast.success('Payout requested successfully!');
             } catch (error) {
                 console.log(error.message);
@@ -194,12 +198,15 @@ const RequestPayout = () => {
                                                         Requested
                                                     </span>
                                                 ) : (
+                                                   
                                                     <button 
                                                         className="bg-blue-600 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-sm hover:bg-blue-700 hover:shadow active:scale-95 transition-all" 
                                                         onClick={(e) => requestPayment({ e, value: c })}
                                                     >
                                                         Request Payout
+                                                        
                                                     </button>
+                                                    
                                                 )}
                                             </td>
                                         </tr>

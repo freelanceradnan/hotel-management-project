@@ -314,11 +314,12 @@ getPaymentRequest: builder.query({
 }),
 
 makePendingPayment: builder.mutation({
-  async queryFn(id) {
+  async queryFn({id,value}) {
     try {
       const docRef = doc(db, 'payments', id);
       await updateDoc(docRef, {
-        status: "Paid"
+        status: "Paid",
+        ...value
       });
      
       return { data: { id, status: "Paid" } };

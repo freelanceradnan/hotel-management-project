@@ -87,9 +87,9 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
 }).unwrap();
   if (isNotify) {
       const emailParams = {
-        service_id: import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        template_id: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-        user_id: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+        service_id: import.meta.env.VITE_EMAILJS_ORDER_SERVICE_ID,
+        template_id: import.meta.env.VITE_EMAILJS_ORDER_TEMPLATE_ID,
+        user_id: import.meta.env.VITE_EMAILJS_ORDER_PUBLIC_KEY,
         template_params: {
           user_name: currentUser.displayName || currentUser.email, // Use name if available
           order_id: orderDetails.OrderId,
