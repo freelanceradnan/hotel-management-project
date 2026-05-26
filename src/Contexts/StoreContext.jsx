@@ -1,10 +1,14 @@
-import React, { createContext, useEffect, useState } from 'react';
-import { auth, db } from '../Firebase/Firebase';
-import { onAuthStateChanged, onIdTokenChanged, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-export const StoreContext=createContext()
-export const StoreContextProvider = ({children}) => {
-    const [currentUser,setCurrentUser]=useState(null)
+import React, { createContext, useEffect, useState } from "react";
+import { auth, db } from "../Firebase/Firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { useAdminSettingsQuery } from "../Feature/ApiSlice";
+
+export const StoreContext = createContext();
+
+export const StoreContextProvider = ({ children }) => {
+  const {data:adminSettings}=useAdminSettingsQuery()
+   const [currentUser,setCurrentUser]=useState(null)
     const [loading,setLoading]=useState(true)
     const [isLogin,setIsLogin]=useState(false)
     const [role,setRole]=useState(null)
@@ -13,62 +17,61 @@ export const StoreContextProvider = ({children}) => {
     const [OrderTime,setOrderTime]=useState("")
     const [PreBookingData,setPreBookingData]=useState({})
     const [updateOrderId,setUpdateOrderId]=useState("")
-    // console.log(updateOrderId)
-    // console.log(PreBookingData);
+    const [isOrderNotify,setIsOrderNotify]=useState(true)
+    const [isPaymentNotify,setIsPaymentNotify]=useState(true)
+    const [isListingNotify,setIsListingNotify]=useState(true)
   
-    const resetAuth = () => {
-    setCurrentUser(null);
-    setIsLogin(false);
-    setRole(null);
-  };
-  useEffect(()=>{
-  const unsubscribe=onIdTokenChanged(auth,async(user)=>{
-    setLoading(true)
-    try {
-        //after logout all clear
-    if(!user){
-    setCurrentUser(null);
-    setRole(null);
-    setIsLogin(false);
-    }
-    else{
-    const docRef=doc(db,'users',user.uid)
-    const docSnap=await getDoc(docRef)
-    if (docSnap.exists()) {
-          const data = docSnap.data();
-          setCurrentUser(user);
-          setRole(data.role || "user");
-          setIsLogin(true);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setLoading(true);
+
+      try {
+        if (!user) {
+          setCurrentUser(null);
+          setIsLogin(false);
+          setRole(null);
+          return;
         }
-    //g login
-    else{
-    setCurrentUser(user);
-          setRole("user"); 
-          setIsLogin(true);
-          console.warn("no doc in meet on firebase");
-    }
-    
-    }
-    } catch (error) {
-    setCurrentUser(null)
-    setRole(null)
-    setIsLogin(false)
-    console.log(error.code)
-    }
-    finally{
-        setLoading(false)
-    }
-  })
-  return ()=>unsubscribe()
-  },[])
 
-    const value={
-        currentUser,role,isLogin,loading,orderDetails,setOrderDetails,roomBookingDate,setRoomBookingDate,OrderTime,setOrderTime,PreBookingData,setPreBookingData,updateOrderId,setUpdateOrderId
-    }
-    return (
-        <StoreContext.Provider value={value}>
-       {children}
-        </StoreContext.Provider>
-    );
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        setCurrentUser(user);
+        setIsLogin(true);
+
+        if (docSnap.exists()) {
+          setRole(docSnap.data().role || "user");
+        } else {
+          setRole("user");
+        }
+      } catch (error) {
+        console.log(error);
+        setCurrentUser(null);
+        setIsLogin(false);
+        setRole(null);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+  
+  //const adminSettings
+  useEffect(()=>{
+  if(adminSettings){
+ setIsOrderNotify(adminSettings[0].isOrderNotify)
+ setIsPaymentNotify(adminSettings[0].isPaymentNotify)
+ setIsListingNotify(adminSettings[0].isUserListing)
+  }
+  },[adminSettings])
+  const value = {
+     currentUser,role,isLogin,loading,orderDetails,setOrderDetails,roomBookingDate,setRoomBookingDate,OrderTime,setOrderTime,PreBookingData,setPreBookingData,updateOrderId,setUpdateOrderId,isOrderNotify,isPaymentNotify,isListingNotify
+  };
+
+  return (
+    <StoreContext.Provider value={value}>
+      {children}
+    </StoreContext.Provider>
+  );
 };
-

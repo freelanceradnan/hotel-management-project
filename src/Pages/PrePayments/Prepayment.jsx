@@ -10,6 +10,7 @@ import axios from 'axios';
 import { onAuthStateChanged } from 'firebase/auth';
 const Prepayment = ({orders}) => {
   const [isNotify,setIsNotify]=useState(null) 
+  const {isOrderNotify,isListingNotify,isPaymentNotify}=useContext(StoreContext)
 const [loading, setLoading] = useState(false);
   useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -79,17 +80,19 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
    createAt: fullDateTime,
    status: "paid",
 };
-      await updateOrder({
+if(isOrderNotify){
+  console.log(isOrderNotify)
+        await updateOrder({
    orderData: {
       id: orders.id,
       OrderPayload
    }
 }).unwrap();
-  if (isNotify) {
+  if (isNotify && isOrderNotify) {
       const emailParams = {
-        service_id: import.meta.env.VITE_EMAILJS_ORDER_SERVICE_ID,
-        template_id: import.meta.env.VITE_EMAILJS_ORDER_TEMPLATE_ID,
-        user_id: import.meta.env.VITE_EMAILJS_ORDER_PUBLIC_KEY,
+        service_id: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        template_id: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        user_id: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
         template_params: {
           user_name: currentUser.displayName || currentUser.email, // Use name if available
           order_id: orderDetails.OrderId,
@@ -98,6 +101,7 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
           message: "আপনার রুম বুকিংটি সফলভাবে সম্পন্ন হয়েছে!", 
         },
       };
+}
 
       await axios.post(
         "https://api.emailjs.com/api/v1.0/email/send",

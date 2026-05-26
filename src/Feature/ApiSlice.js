@@ -5,7 +5,7 @@ import { db } from "../Firebase/Firebase";
 export const ApiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fakeBaseQuery(),
-  tagTypes: ['rooms', 'orders', 'users','payment'],
+  tagTypes: ['rooms', 'orders', 'users','payment','settings'],
   endpoints: (builder) => ({
     
     getAllRooms: builder.query({
@@ -348,7 +348,7 @@ updateUserAndRole: builder.mutation({
 }),
 checkUserAuthenticated: builder.query({
   async queryFn(email) {
-    console.log("Checking email in Firestore:", email);
+    
     
     try {
     
@@ -385,6 +385,71 @@ deleteUserData: builder.mutation({
     }
   },
   invalidatesTags: ['users']
+}),
+emailChangeDatabase:builder.mutation({
+  async queryFn(email){
+    try {
+    const q=query(doc(db,'users',email),where("email","==",email))
+    const res=await updateDoc(q)
+    } catch (error) {
+      
+    }
+  }
+}),
+updateSeparateUserData:builder.mutation({
+ async queryFn({ id, body}){
+    try {
+    const docRef=doc(db,'users',id)
+    const docSnap=await updateDoc(docRef,body)
+    return {
+      data:"Success",
+    }  
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  invalidatesTags:['users']
+}),
+adminSettings: builder.query({
+  async queryFn() {
+    try {
+    
+      const colRef = collection(db, 'AdminSettings');
+      const querySnapshot = await getDocs(colRef);
+      const filteredData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      return { data: filteredData };
+      
+    } catch (error) {
+      console.error("Firestore fetch error:", error);
+
+      return { 
+        error: { 
+          status: 'CUSTOM_ERROR', 
+          error: error.message || String(error) 
+        } 
+      };
+    }
+  },
+  providesTags:['settings']
+}),
+setAdminSettings: builder.mutation({
+  async queryFn({ id, payload }) {
+    try {
+      const docRef = doc(db, 'AdminSettings', id);
+      await updateDoc(docRef, {
+        ...payload
+      });
+      return { data: "Successfully updated" };
+
+    } catch (error) {
+      return { error: { message: error.message } };
+    }
+  },
+  invalidatesTags:['settings']
 })
   })
 });
@@ -411,5 +476,8 @@ export const {
   useUpdateUserAndRoleMutation,
   useCheckUserAuthenticatedQuery,
   useLazyCheckUserAuthenticatedQuery,
-  useDeleteUserDataMutation
+  useDeleteUserDataMutation,
+  useUpdateSeparateUserDataMutation,
+  useAdminSettingsQuery,
+  useSetAdminSettingsMutation
 } = ApiSlice;

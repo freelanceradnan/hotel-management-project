@@ -1,12 +1,14 @@
-import React, { useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import {
   useGetPaymentRequestQuery,
   useMakePendingPaymentMutation,
 } from "../../../Feature/ApiSlice";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { StoreContext } from "../../../Contexts/StoreContext";
 
 const AdminPayment = () => {
+  const {isOrderNotify,isListingNotify,isPaymentNotify}=useContext(StoreContext)
   const {
     data: allPaymentRequest,
     isLoading,
@@ -40,7 +42,8 @@ const AdminPayment = () => {
       //update pay status
       await updatePaymentStatus({ id, value }).unwrap();
      //emailjs implementations
-      const emailParams = {
+     if(isPaymentNotify){
+       const emailParams = {
         service_id: import.meta.env.VITE_EMAILJS_CONTACT_SERVICE_ID,
         template_id: import.meta.env.VITE_EMAILJS_CONTACT_TEMPLATE_ID,
         user_id: import.meta.env.VITE_EMAILJS_CONTACT_PUBLIC_KEY,
@@ -59,6 +62,7 @@ const AdminPayment = () => {
         emailParams,
         { headers: { 'Content-Type': 'application/json' } }
       );
+     }
         
       toast.success("Payment completed and email sent successfully!");
     } catch (error) {

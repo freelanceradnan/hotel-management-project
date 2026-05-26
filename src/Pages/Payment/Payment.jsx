@@ -12,6 +12,7 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const {currentUser}=useContext(StoreContext);
   const [isNotify,setIsNotify]=useState(null)
+  const {isOrderNotify,isListingNotify,isPaymentNotify}=useContext(StoreContext)
   
   const {data}=useGetUserDataQuery()
   const navigate=useNavigate()
@@ -93,8 +94,8 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
     
     await addOrder(OrderPayload).unwrap();
 
-    
-    if (isNotify) {
+    console.log(isOrderNotify)
+    if (isNotify && isOrderNotify) {
       const emailParams = {
         service_id: import.meta.env.VITE_EMAILJS_ORDER_SERVICE_ID,
         template_id: import.meta.env.VITE_EMAILJS_ORDER_TEMPLATE_ID,

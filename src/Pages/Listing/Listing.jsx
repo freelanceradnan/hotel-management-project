@@ -9,7 +9,7 @@ import { useAddRoomMutation } from "../../Feature/ApiSlice";
 
 const Listing = ({owner:roomOwner}) => {
   
-  const { currentUser } = useContext(StoreContext);
+  const { currentUser,isListingNotify} = useContext(StoreContext);
   const navigate = useNavigate();
   const [addRoom] = useAddRoomMutation();
   const [listingData, setListingData] = useState({
@@ -74,7 +74,8 @@ const Listing = ({owner:roomOwner}) => {
         ...listingData,
         owner: roomOwner,
       };
-      addRoom(currentRoomData).unwrap();
+     if(isListingNotify){
+       addRoom(currentRoomData).unwrap();
       // await addDoc(docRef,{
       //     ...listingData,
       //     owner:currentUser.email,
@@ -85,6 +86,10 @@ const Listing = ({owner:roomOwner}) => {
       });
       toast.success("room added!");
       navigate("/rooms");
+     }
+     else{
+      toast.error('Listing is disabled by Admin!')
+     }
     } catch (error) {
       console.log("error is", error.message);
     }
