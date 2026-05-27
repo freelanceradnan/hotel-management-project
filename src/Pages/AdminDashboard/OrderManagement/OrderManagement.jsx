@@ -35,17 +35,17 @@ const OrderManagement = () => {
   const userEmail = currentUser?.email || {};
   const [editId, setEditId] = useState(null);
 
-  //total user order
+  // total user order
   const UsersOrder = allOrders?.length - adminOrder?.length || 0;
 
-  //unpaidTotals
+  // unpaidTotals
   const unPaidTotalOrder = allOrders?.length - AllPaymentsOrder?.length || 0;
 
   const AdminPaymentOrders = AllPaymentsOrder?.filter((order) => {
     return adminRooms?.some((room) => room.id === order.RoomId);
   });
 
-  //AllUnpaidORders
+  // AllUnpaidOrders
   const unPaidAdminOrder = allUnpaidOrders?.filter((order) => {
     return adminRooms?.some((room) => room.id === order.RoomId);
   });
@@ -77,7 +77,7 @@ const OrderManagement = () => {
     return totalRevenue - AdminOrderRevenue;
   }, [adminOrder]);
 
-  //filtering logic
+  // filtering logic
   const filteredOrder = useMemo(() => {
     if (!allOrders) return [];
 
@@ -104,7 +104,7 @@ const OrderManagement = () => {
     );
   }, [allOrders, adminOrder, searchData]);
 
-  //auto payment status update
+  // auto payment status update
   const changeStatus = async ({ value, id }) => {
     try {
       await changeOrder({ value, id }).unwrap();
@@ -113,22 +113,26 @@ const OrderManagement = () => {
       console.error("RTK Mutation Failed:", error);
     }
   };
+
   const deleteORderHandler = async (id) => {
-    try {
-      await deleteORder(id).unwrap();
-      toast.success("order delete success!");
-    } catch (error) {
-      toast.error("failed to delete order");
+    if (window.confirm("Are you sure you want to delete this order?")) {
+      try {
+        await deleteORder(id).unwrap();
+        toast.success("order delete success!");
+      } catch (error) {
+        toast.error("failed to delete order");
+      }
     }
   };
+
   return (
-    <div className=" bg-gray-50 min-h-screen font-sans">
+    <div className="bg-transparent min-h-screen font-sans text-gray-800 dark:text-zinc-100 transition-colors duration-300">
       {/* Title Header */}
       <div className="mb-8">
-        <h2 className="text-3xl font-extrabold text-gray-800 tracking-tight uppercase">
+        <h2 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100 tracking-tight uppercase">
           Book Management
         </h2>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
           Manage, monitor, and update ordered rooms efficiently.
         </p>
       </div>
@@ -136,59 +140,59 @@ const OrderManagement = () => {
       {/* Metric Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {/* Card 1: Total Orders */}
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200/60 flex flex-col justify-between">
+        <div className="bg-white dark:bg-zinc-800 p-5 rounded-xl shadow-sm border border-gray-200/60 dark:border-zinc-700/60 flex flex-col justify-between transition-colors">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+              <h1 className="text-sm font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider">
                 Total Orders
               </h1>
-              <p className="text-3xl font-bold text-gray-800 mt-1">
+              <p className="text-3xl font-bold text-gray-800 dark:text-gray-100 mt-1">
                 {allOrders?.length || 0}
               </p>
             </div>
-            <div className="p-2.5 bg-blue-50 text-blue-500 rounded-lg">
+            <div className="p-2.5 bg-blue-50 dark:bg-blue-950/40 text-blue-500 dark:text-blue-400 rounded-lg">
               <Calendar size={20} />
             </div>
           </div>
-          <div className="flex justify-between border-t border-gray-100 pt-3 mt-4 text-xs text-gray-500">
+          <div className="flex justify-between border-t border-gray-100 dark:border-zinc-700/60 pt-3 mt-4 text-xs text-gray-500 dark:text-zinc-400">
             <div>
               Admin:{" "}
-              <span className="font-semibold text-gray-700">
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
                 {adminOrder?.length || 0}
               </span>
             </div>
             <div>
               User:{" "}
-              <span className="font-semibold text-gray-700">{UsersOrder}</span>
+              <span className="font-semibold text-gray-700 dark:text-gray-200">{UsersOrder}</span>
             </div>
           </div>
         </div>
 
         {/* Card 2: Paid Orders */}
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200/60 flex flex-col justify-between">
+        <div className="bg-white dark:bg-zinc-800 p-5 rounded-xl shadow-sm border border-gray-200/60 dark:border-zinc-700/60 flex flex-col justify-between transition-colors">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+              <h1 className="text-sm font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider">
                 Paid Orders
               </h1>
-              <p className="text-3xl font-bold text-emerald-600 mt-1">
+              <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
                 {AllPaymentsOrder?.length || 0}
               </p>
             </div>
-            <div className="p-2.5 bg-emerald-50 text-emerald-500 rounded-lg">
+            <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 dark:text-emerald-400 rounded-lg">
               <CircleCheckBig size={20} />
             </div>
           </div>
-          <div className="flex justify-between border-t border-gray-100 pt-3 mt-4 text-xs text-gray-500">
+          <div className="flex justify-between border-t border-gray-100 dark:border-zinc-700/60 pt-3 mt-4 text-xs text-gray-500 dark:text-zinc-400">
             <div>
               Admin:{" "}
-              <span className="font-semibold text-gray-700">
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
                 {AdminPaymentOrders?.length || 0}
               </span>
             </div>
             <div>
               User:{" "}
-              <span className="font-semibold text-gray-700">
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
                 {AllPaymentsOrder?.length - AdminPaymentOrders?.length || 0}
               </span>
             </div>
@@ -196,30 +200,30 @@ const OrderManagement = () => {
         </div>
 
         {/* Card 3: Unpaid Orders */}
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200/60 flex flex-col justify-between">
+        <div className="bg-white dark:bg-zinc-800 p-5 rounded-xl shadow-sm border border-gray-200/60 dark:border-zinc-700/60 flex flex-col justify-between transition-colors">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+              <h1 className="text-sm font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider">
                 Unpaid Orders
               </h1>
-              <p className="text-3xl font-bold text-rose-600 mt-1">
+              <p className="text-3xl font-bold text-rose-600 dark:text-rose-400 mt-1">
                 {unPaidTotalOrder || 0}
               </p>
             </div>
-            <div className="p-2.5 bg-rose-50 text-rose-500 rounded-lg">
+            <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 text-rose-500 dark:text-rose-400 rounded-lg">
               <X size={20} />
             </div>
           </div>
-          <div className="flex justify-between border-t border-gray-100 pt-3 mt-4 text-xs text-gray-500">
+          <div className="flex justify-between border-t border-gray-100 dark:border-zinc-700/60 pt-3 mt-4 text-xs text-gray-500 dark:text-zinc-400">
             <div>
               Admin:{" "}
-              <span className="font-semibold text-gray-700">
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
                 {unPaidAdminOrder?.length || 0}
               </span>
             </div>
             <div>
               User:{" "}
-              <span className="font-semibold text-gray-700">
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
                 {unPaidTotalOrder - unPaidAdminOrder?.length || 0}
               </span>
             </div>
@@ -227,30 +231,30 @@ const OrderManagement = () => {
         </div>
 
         {/* Card 4: Total Revenue */}
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200/60 flex flex-col justify-between">
+        <div className="bg-white dark:bg-zinc-800 p-5 rounded-xl shadow-sm border border-gray-200/60 dark:border-zinc-700/60 flex flex-col justify-between transition-colors">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+              <h1 className="text-sm font-semibold text-gray-400 dark:text-zinc-500 uppercase tracking-wider">
                 Total Revenue
               </h1>
-              <p className="text-3xl font-bold text-amber-600 mt-1">
+              <p className="text-3xl font-bold text-amber-600 dark:text-amber-400 mt-1">
                 ${totalRevenue || 0}
               </p>
             </div>
-            <div className="p-2.5 bg-amber-50 text-amber-500 rounded-lg">
+            <div className="p-2.5 bg-amber-50 dark:bg-amber-950/40 text-amber-500 dark:text-amber-400 rounded-lg">
               <DollarSign size={20} />
             </div>
           </div>
-          <div className="flex justify-between border-t border-gray-100 pt-3 mt-4 text-xs text-gray-500">
+          <div className="flex justify-between border-t border-gray-100 dark:border-zinc-700/60 pt-3 mt-4 text-xs text-gray-500 dark:text-zinc-400">
             <div>
               Admin:{" "}
-              <span className="font-semibold text-gray-700">
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
                 ${AdminOrderRevenue || 0}
               </span>
             </div>
             <div>
               User:{" "}
-              <span className="font-semibold text-gray-700">
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
                 ${userOrderRevenue || 0}
               </span>
             </div>
@@ -263,17 +267,17 @@ const OrderManagement = () => {
         <input
           type="search"
           placeholder="Find Admin or Users Order (or type 'admin' / 'user')..."
-          className="w-full max-w-md px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm shadow-sm transition"
+          className="w-full max-w-md px-4 py-2.5 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 dark:text-zinc-100 shadow-sm transition placeholder-gray-400 dark:placeholder-zinc-500"
           onChange={(e) => setSearchData(e.target.value)}
         />
       </div>
 
       {/* Order Table Layout */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200/50 overflow-hidden">
+      <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-gray-200/50 dark:border-zinc-700/60 overflow-hidden transition-colors">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50/70 text-gray-500 uppercase text-xs font-bold border-b border-gray-100 tracking-wider">
+              <tr className="bg-gray-50/70 dark:bg-zinc-900/50 text-gray-500 dark:text-zinc-400 uppercase text-xs font-bold border-b border-gray-100 dark:border-zinc-700/80 tracking-wider">
                 <th className="px-6 py-4">Room Name</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Booking Email</th>
@@ -283,7 +287,7 @@ const OrderManagement = () => {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-gray-100 text-sm text-gray-700">
+            <tbody className="divide-y divide-gray-100 dark:divide-zinc-700/60 text-sm text-gray-700 dark:text-zinc-300">
               {filteredOrder?.map((order) => {
                 const isAdminOrder = adminOrder?.some(
                   (admin) => admin.RoomId === order.RoomId,
@@ -298,16 +302,16 @@ const OrderManagement = () => {
                 return (
                   <tr
                     key={order.id}
-                    className="hover:bg-gray-50/50 transition duration-150"
+                    className="hover:bg-gray-50/50 dark:hover:bg-zinc-700/30 transition duration-150"
                   >
-                    <td className="px-6 py-4 font-semibold text-gray-900">
+                    <td className="px-6 py-4 font-semibold text-gray-900 dark:text-zinc-100">
                       {order.RoomId}
                     </td>
 
                     <td className="px-6 py-4">
                       {editId === order.id ? (
                         <select
-                          className="px-2 py-1 bg-white border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                          className="px-2 py-1 bg-white dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-md text-sm text-gray-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
                           onChange={(e) =>
                             changeStatus({
                               value: e.target.value,
@@ -323,8 +327,8 @@ const OrderManagement = () => {
                         <span
                           className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
                             isPaid
-                              ? "bg-emerald-50 text-emerald-700"
-                              : "bg-rose-50 text-rose-700"
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400"
+                              : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400"
                           }`}
                         >
                           {isPaid ? "Paid" : "Unpaid"}
@@ -332,19 +336,19 @@ const OrderManagement = () => {
                       )}
                     </td>
 
-                    <td className="px-6 py-4 text-gray-500">{order.email}</td>
+                    <td className="px-6 py-4 text-gray-500 dark:text-zinc-400">{order.email}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`px-2.5 py-0.5 rounded text-xs font-bold tracking-wider uppercase ${
                           isAdminOrder
-                            ? "bg-purple-50 text-purple-700 border border-purple-100"
-                            : "bg-gray-100 text-gray-600"
+                            ? "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 border border-purple-100 dark:border-purple-900/50"
+                            : "bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-zinc-300"
                         }`}
                       >
                         {isAdminOrder ? "Admin" : "user"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-bold text-gray-900">
+                    <td className="px-6 py-4 font-bold text-gray-900 dark:text-zinc-100">
                       ${order.Price}
                     </td>
                     <td className="px-6 py-4 text-center">
@@ -353,13 +357,13 @@ const OrderManagement = () => {
                           onClick={() =>
                             setEditId(editId === order.id ? null : order.id)
                           }
-                          className={`p-1 rounded transition ${editId === order.id ? "text-blue-600 bg-blue-50" : "text-gray-400 hover:text-blue-600"}`}
+                          className={`p-1 rounded transition ${editId === order.id ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50" : "text-gray-400 dark:text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400"}`}
                           title="Edit Status"
                         >
                           <Edit size={16} />
                         </button>
                         <button
-                          className="p-1 text-gray-400 hover:text-rose-600 rounded transition"
+                          className="p-1 text-gray-400 dark:text-zinc-500 hover:text-rose-600 dark:hover:text-rose-400 rounded transition"
                           title="Delete"
                           type="button"
                           onClick={() => deleteORderHandler(order.id)}
@@ -377,7 +381,7 @@ const OrderManagement = () => {
                 <tr>
                   <td
                     colSpan="6"
-                    className="text-center py-10 text-gray-400 font-medium"
+                    className="text-center py-10 text-gray-400 dark:text-zinc-500 font-medium"
                   >
                     No records found matching your search.
                   </td>

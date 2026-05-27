@@ -18,3 +18,5 @@
     
     font-family: Playfair Display !important;
 }
+/* dark */
+@custom-variant dark (.dark &)

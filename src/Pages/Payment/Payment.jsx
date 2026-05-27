@@ -94,7 +94,7 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
     
     await addOrder(OrderPayload).unwrap();
 
-    console.log(isOrderNotify)
+    
     if (isNotify && isOrderNotify) {
       const emailParams = {
         service_id: import.meta.env.VITE_EMAILJS_ORDER_SERVICE_ID,

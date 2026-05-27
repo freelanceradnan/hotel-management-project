@@ -20,7 +20,8 @@ export const StoreContextProvider = ({ children }) => {
     const [isOrderNotify,setIsOrderNotify]=useState(true)
     const [isPaymentNotify,setIsPaymentNotify]=useState(true)
     const [isListingNotify,setIsListingNotify]=useState(true)
-  
+    const [isTheme,setIsTheme]=useState('')
+    console.log(isTheme)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setLoading(true);
@@ -66,7 +67,7 @@ export const StoreContextProvider = ({ children }) => {
   }
   },[adminSettings])
   const value = {
-     currentUser,role,isLogin,loading,orderDetails,setOrderDetails,roomBookingDate,setRoomBookingDate,OrderTime,setOrderTime,PreBookingData,setPreBookingData,updateOrderId,setUpdateOrderId,isOrderNotify,isPaymentNotify,isListingNotify
+     currentUser,role,isLogin,loading,orderDetails,setOrderDetails,roomBookingDate,setRoomBookingDate,OrderTime,setOrderTime,PreBookingData,setPreBookingData,updateOrderId,setUpdateOrderId,isOrderNotify,isPaymentNotify,isListingNotify,isTheme,setIsTheme
   };
 
   return (
