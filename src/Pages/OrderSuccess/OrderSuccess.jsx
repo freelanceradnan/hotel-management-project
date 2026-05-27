@@ -7,7 +7,7 @@ const OrderSuccess = () => {
     const {orderDetails}=useContext(StoreContext)
     
     return (
-        <div className='py-20 md:pt-8 px-4 md:px-16 lg:px-24 xl:px-24 bg-[#fdfdfd] min-h-screen'>
+        <div className='pt-20 md:pt-8 px-4 md:px-16 lg:px-24 xl:px-24 bg-[#fdfdfd] min-h-screen'>
          
           <div className="min-h-screen bg-white flex items-center justify-center p-6 text-center">
             <div className="max-w-lg w-full">

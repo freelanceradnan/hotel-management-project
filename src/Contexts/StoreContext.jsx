@@ -21,7 +21,7 @@ export const StoreContextProvider = ({ children }) => {
     const [isPaymentNotify,setIsPaymentNotify]=useState(true)
     const [isListingNotify,setIsListingNotify]=useState(true)
     const [isTheme,setIsTheme]=useState('')
-    console.log(isTheme)
+ 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setLoading(true);
@@ -61,9 +61,9 @@ export const StoreContextProvider = ({ children }) => {
   //const adminSettings
   useEffect(()=>{
   if(adminSettings){
- setIsOrderNotify(adminSettings[0].isOrderNotify)
- setIsPaymentNotify(adminSettings[0].isPaymentNotify)
- setIsListingNotify(adminSettings[0].isUserListing)
+ setIsOrderNotify(adminSettings[0]?.isOrderNotify)
+ setIsPaymentNotify(adminSettings[0]?.isPaymentNotify)
+ setIsListingNotify(adminSettings[0]?.isUserListing)
   }
   },[adminSettings])
   const value = {

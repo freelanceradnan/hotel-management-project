@@ -64,7 +64,7 @@ const RoomDetails = () => {
         );
     }
     return room && (
-       <div className='py-28 md:py-35 px-4 md:px-16 lg:px-24 xl:px-32 bg-[#fdfdfd]'>
+       <div className='pt-28 md:pt-35 px-4 md:px-16 lg:px-24 xl:px-32 bg-[#fdfdfd]'>
         {/* {room-details} */}
         <div className='flex flex-col md:flex-row md:items-center md:items-center gap-2'>
             <h1 className='text-3xl md:text-4xl font-playfair'>{room.name}
@@ -115,34 +115,41 @@ const RoomDetails = () => {
 {/* {checkin cheout form} */}
 
 <form className='flex flex-col md:flex-row items-start md:items-center justify-between bg-[#ffffff] shadow-[0px_0px_20px_rgba(0,0,0,0.2)] p-6 rounded-xl mx-auto mt-16 max-w-6xl ' onSubmit={handleCheckAvailability}>
-<div className='flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500 mx-auto'>
+  <div className='flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500 mx-auto w-full md:w-auto'>
 
-<div className=''>
-    <label htmlFor="checkDate" className='font-medium'>Check In</label>
-<input type="date" name="" id="checkDate" placeholder='Check-In' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' value={checkin} onChange={(e)=>setCheckIn(e.target.value)}required/>
-</div>
-<div className=''>
-    <label htmlFor="CheckoutDate" className='font-medium'>Check-Out</label>
-<input type="date" name="" id="CheckoutDate" placeholder='Check-In' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' value={checkout} onChange={(e)=>setCheckOut(e.target.value)} required/>
-</div>
+    {/* Check In */}
+    <div className='w-full md:w-auto'>
+      <label htmlFor="checkDate" className='font-medium'>Check In</label>
+      <input type="date" name="" id="checkDate" placeholder='Check-In' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' value={checkin} onChange={(e)=>setCheckIn(e.target.value)} required/>
+    </div>
 
-<div className='flex flex-col'>
-<label htmlFor="guests" className='font-medium'>Guests</label>
-<input type="number" name="" id="guests" min="1" placeholder='0' className='max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' value={guestNumber} onChange={(e)=>setGuestNumber(Number((e.target.value)))} required/>
-</div>
-</div>
-<div className='mx-auto'>
-{step===1?
-<button type='submit' className='bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-3 md:py-4 text-base cursor-pointer px-3 py-2'>
-Check Availability 
-</button>:
-<Link to={`/rooms/checkout/`+room.id}>
-<button type='button' className='bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-16 md:px-3 md:py-4 text-base cursor-pointer px-3 py-2'>
-Reserve Now 
-</button>
-</Link>
-}
-</div>
+    {/* Check Out */}
+    <div className='w-full md:w-auto'>
+      <label htmlFor="CheckoutDate" className='font-medium'>Check-Out</label>
+      <input type="date" name="" id="CheckoutDate" placeholder='Check-In' className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' value={checkout} onChange={(e)=>setCheckOut(e.target.value)} required/>
+    </div>
+
+    {/* Guests */}
+    <div className='flex flex-col w-full md:w-auto'>
+      <label htmlFor="guests" className='font-medium'>Guests</label>
+      {/* Changed max-w-20 to w-full md:max-w-20 */}
+      <input type="number" name="" id="guests" min="1" placeholder='0' className='w-full md:max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' value={guestNumber} onChange={(e)=>setGuestNumber(Number((e.target.value)))} required/>
+    </div>
+
+  </div>
+
+  <div className='mx-auto max-md:w-full'>
+    {step === 1 ?
+      <button type='submit' className='bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-3 md:py-4 text-base cursor-pointer px-3 py-2'>
+        Check Availability 
+      </button> :
+      <Link to={`/rooms/checkout/`+room.id} className='max-md:w-full'>
+        <button type='button' className='bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-3 md:py-4 text-base cursor-pointer px-3 py-2'>
+          Reserve Now 
+        </button>
+      </Link>
+    }
+  </div>
 </form>
 {/* common-specifications */}
 <div className='mt-25 space-y-4'>

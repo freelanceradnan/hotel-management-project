@@ -93,6 +93,7 @@ const paymentSubmit = async(e) => {
         }
         else{
             navigate('/preorder')
+            scrollTo(0,0)
              const finalBookingData = {
             ...formData,
             RoomId: room.id,

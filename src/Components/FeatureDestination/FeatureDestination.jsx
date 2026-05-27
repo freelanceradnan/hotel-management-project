@@ -25,7 +25,7 @@ if (isLoading) {
     }
     
     return (
-        <div className='flex flex-col items-center px-6 md:px-16 lg:px-24 lx:px-32  bg-slate-20 py-20'>
+        <div className='flex flex-col items-center px-6 md:px-16 lg:px-24 lx:px-32  bg-slate-20 pt-20'>
             <Title title='Featured Hotels' subTitle='Discover our handpicked selection of exceptional properties around the world, offering unparalleled luxury and unforgettable experiences' align='center' font="playfair"/>
             <div className='flex flex-wrap items-center justify-center mt-20 gap-10'>
                 

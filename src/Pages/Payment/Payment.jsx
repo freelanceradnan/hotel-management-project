@@ -123,9 +123,10 @@ const fullDateTime = `${normalDate}, ${normalTime}`;
     
  
     setTimeout(() => {
-      navigate('/order-success');
-      window.scrollTo(0, 0);
-    }, 500);
+  
+  navigate('/order-success', { replace: true });
+  window.scrollTo(0, 0);
+}, 500);
 
   } catch (error) {
     setLoading(false);
