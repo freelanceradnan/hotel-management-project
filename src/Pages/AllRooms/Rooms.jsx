@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { assets, facilityIcons, roomCommonData, roomsDummyData } from './../../assets/assets';
 import { useNavigate } from 'react-router';
+import { useSearchParams } from 'react-router-dom'; // <-- Imported for shareable URL
 import StarRating from './../../Components/StarRatings/StarRating';
 import { useGetAllRoomsQuery } from '../../Feature/ApiSlice';
+
 //dynamic filter components
 const Checkbox=({label,selected=false,onChange=()=>{ }})=>{
    return (
@@ -22,14 +24,29 @@ const RadioButton=({label,selected=false,onChange=()=>{ }})=>{
 }
 const Rooms = () => {
     const {data:allRooms,isLoading}=useGetAllRoomsQuery()
-    const [selectRoomType,setSelectRoomType]=useState([])
-    const [storeRoom,setStoreRoom]=useState([])
-    const [selectPriceRange,setSelectPriceRange]=useState([])
-    const [selectShort,setSelectShort]=useState("")
-    const [searchFilterData,setSearchFilterData]=useState([])
     const navigate=useNavigate()
     const [openFilters,setOpenFilters]=useState(false)
-    //dummy duata for filter options
+
+    // 1. Initialize useSearchParams
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // 2. Derive states directly from URL search params so reloading maintains states
+    const [selectRoomType, setSelectRoomType] = useState(() => {
+        const types = searchParams.get('types');
+        return types ? types.split(',') : [];
+    });
+    const [selectPriceRange, setSelectPriceRange] = useState(() => {
+        const prices = searchParams.get('prices');
+        return prices ? prices.split(',') : [];
+    });
+    const [selectShort, setSelectShort] = useState(() => {
+        return searchParams.get('sort') || "";
+    });
+
+    const [storeRoom,setStoreRoom]=useState([])
+    const [searchFilterData,setSearchFilterData]=useState([])
+    
+    //dummy data for filter options
     const roomTypes=[
         "Single Bed",
         "Double Bed",
@@ -48,16 +65,28 @@ const Rooms = () => {
         //do work next
         "Newest First"
     ]
+
     useEffect(() => {
-    if (allRooms?.length > 0) { 
-        setStoreRoom(allRooms);
-    }
-}, [allRooms]);
-//filter data
+        if (allRooms?.length > 0) { 
+            setStoreRoom(allRooms);
+        }
+    }, [allRooms]);
+
+    // 3. Keep URL Params in sync whenever filter states change
+    useEffect(() => {
+        const params = {};
+        if (selectRoomType.length > 0) params.types = selectRoomType.join(',');
+        if (selectPriceRange.length > 0) params.prices = selectPriceRange.join(',');
+        if (selectShort) params.sort = selectShort;
+        
+        setSearchParams(params, { replace: true });
+    }, [selectRoomType, selectPriceRange, selectShort, setSearchParams]);
+
+    //filter data
     useEffect(()=>{
     if(storeRoom){
     let temp=[...storeRoom]
-if(selectRoomType.length>0){
+    if(selectRoomType.length>0){
        temp=temp.filter(room=>selectRoomType.includes(room.roomType))
     }
     if(selectPriceRange.length>0){
@@ -70,12 +99,13 @@ if(selectRoomType.length>0){
             })
     }
     if(selectShort==='Price Low to High') temp.sort((a,b)=>a.price-b.price)
-    if(selectShort==='Price Hight to Lo') temp.sort((b,a)=>b.price-a.price)
+    if(selectShort==='Price Hight to Lo' || selectShort==='Price Hight to Low') temp.sort((b,a)=>b.price-a.price) // Fixed typo handling from your config
     setSearchFilterData(temp)
     }
     
     },[selectRoomType,selectPriceRange,selectShort,storeRoom])
-//laoding states
+
+//loading states
      if (isLoading) {
         return (
             <div className='flex flex-wrap justify-center gap-10 py-20 bg-slate-50'>
