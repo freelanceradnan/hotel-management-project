@@ -11,10 +11,10 @@ const AdminStatistics = () => {
   
   // Payment calculations
   const stats = useMemo(() => {
-    const totalPayment = allpayment?.reduce((sum, item) => sum += item.Price, 0);
+    const totalPayment = allpayment?.reduce((sum, item) => sum += Number(item.Price), 0);
     return { totalPayment };
   }, [allpayment]);
- 
+ console.log(stats.totalPayment)
   // Weekly trend metrics
   const data = [
     { name: 'Total Rooms', value: allRooms.length },
