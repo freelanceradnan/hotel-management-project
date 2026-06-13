@@ -22,12 +22,12 @@ if (isLoading) {
                 ))}
             </div>
         );
-    }
+        }
     
     return (
         <div className='flex flex-col items-center px-6 md:px-16 lg:px-24 lx:px-32  bg-slate-20 pt-20'>
             <Title title='Featured Hotels' subTitle='Discover our handpicked selection of exceptional properties around the world, offering unparalleled luxury and unforgettable experiences' align='center' font="playfair"/>
-            <div className='flex flex-wrap items-center justify-center mt-20 gap-10'>
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-20 justify-items-center w-full">
                 
                 {allRooms?.slice(0,4).map((room,index)=>(
                     <HotelCard key={room.id} room={room} index={index}/>

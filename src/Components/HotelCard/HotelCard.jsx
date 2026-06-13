@@ -18,7 +18,7 @@ const HotelCard = ({room,index}) => {
     return (
        <div
   key={room._id} 
-  className='relative flex flex-col max-w-70 lg:max-w-60 w-full rounded-xl overflow-hidden bg-white text-gray-500/90 shadow-[0px_4px_4px_rgba(0,0,0,0.5)] h-full'
+  className='relative flex flex-col w-full rounded-xl overflow-hidden bg-white text-gray-500/90 shadow-[0px_4px_4px_rgba(0,0,0,0.5)] h-full'
 >
     <div className='w-full h-48 overflow-hidden shrink-0'>
        <Link to={`/rooms/`+room.id}> <img src={room.image?.[0]} alt="room-image" className='w-full h-full object-cover' 

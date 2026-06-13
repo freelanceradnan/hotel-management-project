@@ -117,7 +117,7 @@ if (loading) {
                    
                     {isListing?<Link to="/userDashboard" className={`${isScrolled ? "text-gray-700" : "text-white"} pb-0.5`}>Dashboard</Link>:<>
                     {isLogin && role=='user' &&
-                    <Link to="/listing" className={`${isScrolled ? "text-gray-700" : "text-white"}`}>Listing</Link>
+                    <Link to="/listing" state={{ owner: currentUser?.email }}  className={`${isScrolled ? "text-gray-700" : "text-white"}`}>Listing</Link>
                     }
                     </>}
                   
@@ -141,13 +141,14 @@ if (loading) {
     <div className="flex items-center gap-1.5 p-1 pr-2.5 bg-white/80 hover:bg-white transition-all duration-300 rounded-full border border-white/30 cursor-pointer group shadow-sm backdrop-blur-sm">
       {/* Avatar Circle */}
       <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[11px] font-bold text-white shadow-md group-hover:scale-105 transition-transform">
-        M
+       {currentUser?.email?.slice(0,1)}
       </div>
 
       {/* Text Container */}
       <div className="flex flex-col justify-center text-left select-none">
         <h2 className="text-[11px] font-bold leading-none tracking-wide text-blue-600">
-          Mahim
+         
+          {currentUser.email.slice(0,5)+'...'}
         </h2>
         <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-none mt-1">
           User
@@ -329,7 +330,16 @@ if (loading) {
                     ))}
                         {isListing?<Link to="/userDashboard" className={`text-white bg-blue-500 rounded-sm p-1`}  onClick={() => setIsMenuOpen(false)}>Dashboard</Link>:<>
                     {isLogin && role=='user' &&
-                    <Link to="/listing" className={`text-white bg-blue-500 rounded-sm p-1`}  onClick={() => setIsMenuOpen(false)}>Listing</Link>
+                
+
+<Link 
+  to="/listing" 
+  className="text-white bg-blue-500 rounded-sm p-1"  
+  onClick={() => setIsMenuOpen(false)} 
+  state={{ owner: currentUser?.email }} 
+>
+  Listing
+</Link>
                     }
                     </>}
                     {/* <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all">

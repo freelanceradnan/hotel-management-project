@@ -74,7 +74,8 @@ const Listing = ({owner:roomOwner}) => {
         ...listingData,
         owner: roomOwner,
       };
-     if(isListingNotify){
+      
+     if(isListingNotify && currentRoomData.owner){
        addRoom(currentRoomData).unwrap();
       // await addDoc(docRef,{
       //     ...listingData,

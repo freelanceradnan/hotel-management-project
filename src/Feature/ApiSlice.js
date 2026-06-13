@@ -128,6 +128,8 @@ export const ApiSlice = createApi({
       async queryFn(roomData) {
         try {
           const docRef = collection(db, 'rooms');
+         
+          
           await addDoc(docRef, roomData);
           return { data: 'ok' };
         } catch (error) {

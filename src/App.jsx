@@ -109,7 +109,11 @@ const showFooter = !isAdminPath && isKnownRoute;
     <Route path="requestedAdmin" element={<ContactAdmin/>} />
     </Route>
     <Route path="/prepayment" element={<PrePaymentPage/>}/>
-    <Route path="/listing" element={<ListingPage/>}/>
+    <Route path="/listing" element={
+      <UserPrivate>
+        <ListingPage/>
+      </UserPrivate>
+    }/>
    
     {/* <Route path="/check" element={<Check/>}/> */}
     <Route path="/prepaymentsuccess" element={<PrePaymentSuccess/>}/>

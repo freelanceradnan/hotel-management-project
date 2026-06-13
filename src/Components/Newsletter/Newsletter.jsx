@@ -4,9 +4,9 @@ import Title from './../Title/Title';
 
 const Newsletter = () => {
     return (
-        <div>
-          <div className="flex flex-col items-center max-w-5xl lg:w-full rounded-2xl px-4 py-12 md:py-16 mx-2 lg:mx-auto mb-30 bg-gray-900 text-white">
-    <div className="flex flex-col justify-center items-center text-center">
+        <div className='px-6 md:px-16 lg:px-24 xl:px-32'>
+         <div className="flex flex-col items-center pt-8 w-full py-12 md:py-16 mx-auto mb-30 bg-gray-900 text-white rounded-2xl ">
+    <div className="flex flex-col justify-center items-center text-center w-full">
        <Title title='Stay Inspired' subTitle='Join our newsletter and be the first to discover new destinations, exclusive offers, and travel inspiration.'/>
     </div>
     <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-6">
